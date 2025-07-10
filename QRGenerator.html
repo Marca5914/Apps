@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- QR Code Generation Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Using Inter font as the base font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom style for the QR code canvas to ensure it's sharp */
+        #qrcode canvas {
+            width: 100% !important;
+            height: auto !important;
+            max-width: 300px; /* Control max size */
+        }
+        #qrcode img {
+            margin: auto;
+            border-radius: 0.5rem; /* Rounded corners for the QR code image */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-white">QR Code Generator</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">Enter text or a URL to generate a QR code.</p>
+        </div>
+
+        <!-- Input Form -->
+        <div class="space-y-4">
+            <div>
+                <label for="text-input" class="sr-only">Enter Text or URL</label>
+                <input type="text" id="text-input" placeholder="e.g., https://www.google.com" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 focus:outline-none transition duration-300" autocomplete="off">
+            </div>
+            <button id="generate-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
+                Generate QR Code
+            </button>
+        </div>
+
+        <!-- QR Code Display Area -->
+        <div id="qrcode-container" class="mt-6 flex flex-col items-center justify-center p-6 bg-gray-50 dark:bg-gray-700 rounded-xl min-h-[200px] transition-all duration-300">
+             <div id="qrcode" class="w-full max-w-[256px] h-auto flex items-center justify-center"></div>
+             <p id="placeholder-text" class="text-gray-400 dark:text-gray-500">Your QR code will appear here</p>
+        </div>
+        
+        <!-- Download Button -->
+        <div class="mt-4 text-center">
+            <button id="download-btn" class="hidden w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
+                Download PNG
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // DOM Element References
+        const generateBtn = document.getElementById('generate-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const textInput = document.getElementById('text-input');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const placeholderText = document.getElementById('placeholder-text');
+
+        let qrCodeInstance = null; // To hold the QRCode.js instance
+
+        // Function to generate the QR code
+        const generateQRCode = () => {
+            const text = textInput.value.trim();
+
+            // Simple validation: Do not generate if input is empty
+            if (!text) {
+                // You could add a more user-friendly message here if desired
+                textInput.focus();
+                return;
+            }
+
+            // Clear previous QR code
+            qrcodeContainer.innerHTML = '';
+
+            // Hide placeholder text and show the container
+            placeholderText.classList.add('hidden');
+
+            // Create new QR Code
+            try {
+                 qrCodeInstance = new QRCode(qrcodeContainer, {
+                    text: text,
+                    width: 256,
+                    height: 256,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H // High correction level
+                });
+            } catch (error) {
+                console.error("Error generating QR Code:", error);
+                placeholderText.textContent = "Error generating QR Code.";
+                placeholderText.classList.remove('hidden');
+                downloadBtn.classList.add('hidden'); // Hide download on error
+                return;
+            }
+
+
+            // Show the download button after a short delay for the QR code to render
+            setTimeout(() => {
+                downloadBtn.classList.remove('hidden');
+            }, 100);
+        };
+
+        // Event listener for the generate button
+        generateBtn.addEventListener('click', generateQRCode);
+
+        // Event listener for pressing Enter in the input field
+        textInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                generateQRCode();
+            }
+        });
+
+        // Event listener for the download button
+        downloadBtn.addEventListener('click', () => {
+            const qrCanvas = qrcodeContainer.querySelector('canvas');
+            const qrImage = qrcodeContainer.querySelector('img');
+
+            if (qrCanvas) {
+                // Create a temporary link element
+                const link = document.createElement('a');
+                link.download = 'qrcode.png';
+                link.href = qrCanvas.toDataURL('image/png');
+                
+                // Trigger the download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else if (qrImage) {
+                // If the library generated an img tag, use its src
+                const link = document.createElement('a');
+                link.download = 'qrcode.png';
+                link.href = qrImage.src;
+                
+                 // Trigger the download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                console.error("Could not find QR code canvas or image to download.");
+            }
+        });
+    </script>
+</body>
+</html>
