@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Directory</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            margin: 2em;
+            background-color: #f6f8fa;
+            color: #24292e;
+        }
+        h1 {
+            border-bottom: 1px solid #e1e4e8;
+            padding-bottom: 0.3em;
+            margin-bottom: 1em;
+        }
+        #file-grid-container {
+            display: grid;
+            /* Creates a responsive grid with a minimum item width of 200px */
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5em;
+        }
+        .preview-pane {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Ensures the pane is always square */
+            aspect-ratio: 1 / 1; 
+            background-color: #ffffff;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #0969da;
+            font-weight: 500;
+            font-size: 1.1em;
+            text-align: center;
+            padding: 1em;
+            word-break: break-word;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .preview-pane:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(140, 149, 159, 0.2);
+        }
+        .message {
+            color: #57606a;
+            background-color: #fff;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            padding: 1.5em;
+            line-height: 1.5;
+            grid-column: 1 / -1; /* Span full width of the grid */
+        }
+        .error-message {
+            color: #d73a49;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Presentations</h1>
+    <div id="file-grid-container">
+        <!-- Preview panes will be dynamically inserted here by JavaScript -->
+    </div>
+
+    <script>
+        // ### Configuration ###
+        const username = 'marca5914';
+        const repository = 'Presentations';
+        // #####################
+
+        // IMPORTANT: This script must be run from a web server (like GitHub Pages).
+        // It will not work if you open the HTML file directly from your local computer (e.g., file:///...).
+        const apiUrl = `https://api.github.com/repos/${username}/${repository}/contents/`;
+
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`GitHub API responded with status: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const gridContainer = document.getElementById('file-grid-container');
+                
+                // Filter for .html files only, excluding index.html
+                const filteredData = data.filter(item =>
+                    item.type === 'file' &&
+                    item.name.toLowerCase().endsWith('.html') &&
+                    item.name.toLowerCase() !== 'index.html'
+                );
+
+                // Sort the filtered files alphabetically
+                filteredData.sort((a, b) => a.name.localeCompare(b.name));
+
+                if (filteredData.length === 0) {
+                     gridContainer.innerHTML = `<div class="message">No .html files found in this directory.</div>`;
+                } else {
+                    filteredData.forEach(item => {
+                        // Create the link element which acts as the preview pane
+                        const link = document.createElement('a');
+                        link.className = 'preview-pane';
+                        link.href = item.name; // Relative link to the html file
+
+                        // Get name without the .html extension for display
+                        const displayName = item.name.slice(0, -5);
+                        link.textContent = displayName;
+
+                        gridContainer.appendChild(link);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching repository contents:', error);
+                const gridContainer = document.getElementById('file-grid-container');
+                
+                // Display a more informative error message on the page itself.
+                gridContainer.innerHTML = `<div class="message error-message">
+                                    <strong>Error loading file list.</strong><br>
+                                    This can happen if you are viewing this file locally instead of from the GitHub Pages URL, or due to GitHub API rate limits.<br>
+                                    <hr>
+                                    <strong>Details:</strong> ${error.message}
+                                  </div>`;
+            });
+    </script>
+
+</body>
+</html>
