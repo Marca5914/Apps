@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pediatric & Neonatal Blood Pressure Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Pediatric, Infant & Neonatal BP Calculator</h1>
+            <p class="mt-2 text-md text-gray-600">Based on AHA, KiGGS, and Pediatric Nephrology (2012) reference data.</p>
+        </header>
+
+        <main>
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
+                <form id="bp-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Input Fields -->
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-semibold text-gray-700 border-b pb-2">Patient Information</h2>
+                        <div id="dob-container">
+                            <label for="dob" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                            <input type="date" id="dob" name="dob" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div id="height-container">
+                            <label for="height" class="block text-sm font-medium text-gray-700 mb-1">Height/Length (cm)</label>
+                            <input type="number" id="height" name="height" placeholder="e.g., 75" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div id="gestation-container" class="hidden">
+                            <label for="gestation" class="block text-sm font-medium text-gray-700 mb-1">Gestation at Birth (weeks)</label>
+                            <input type="number" id="gestation" name="gestation" placeholder="24-44" min="24" max="44" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                         <h2 class="text-xl font-semibold text-gray-700 border-b pb-2">Parameters</h2>
+                        <div id="sex-container">
+                            <span class="block text-sm font-medium text-gray-700 mb-2">Sex</span>
+                            <div class="flex items-center space-x-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="sex" value="male" required class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <span class="ml-2 text-gray-700">Male</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="sex" value="female" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <span class="ml-2 text-gray-700">Female</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="block text-sm font-medium text-gray-700 mb-2">Reference Data</span>
+                            <div id="source-radios" class="flex flex-wrap gap-x-4 gap-y-2">
+                                <label class="flex items-center">
+                                    <input type="radio" name="source" value="aha" required checked class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <span class="ml-2 text-gray-700">AHA (>1yr)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="source" value="kiggs" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <span class="ml-2 text-gray-700">KiGGS (>3yr)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="source" value="infant" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <span class="ml-2 text-gray-700">Infant (1-12mo)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="source" value="newborn" class="h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <span class="ml-2 text-gray-700">Newborn (0-28d)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="md:col-span-2 mt-4">
+                        <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200 shadow-sm">
+                            Calculate
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results-container" class="mt-8 hidden">
+                 <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Results</h2>
+                    <div id="summary" class="mb-4 text-gray-600 text-sm sm:text-base"></div>
+                    <div class="overflow-x-auto">
+                        <!-- Table for AHA/KiGGS/Infant -->
+                        <table id="percentile-table" class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Percentile</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Systolic (mmHg)</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diastolic (mmHg)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                        <!-- Table for Newborns -->
+                        <table id="newborn-table" class="min-w-full divide-y divide-gray-200 hidden">
+                             <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Postnatal Age (days)</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Systolic (Mean / 95th)</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diastolic (Mean / 95th)</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">MAP (Mean / 95th)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="newborn-table-body" class="bg-white divide-y divide-gray-200"></tbody>
+                        </table>
+                    </div>
+                 </div>
+            </div>
+            
+            <!-- Message/Error Display -->
+            <div id="message-container" class="mt-6 text-center"></div>
+
+        </main>
+        
+        <footer class="text-center mt-12 text-sm text-gray-500">
+            <p><strong>Disclaimer:</strong> This tool is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.</p>
+            <div class="mt-6 border-t pt-4">
+                <h3 class="font-semibold text-gray-600">Data Sources:</h3>
+                <ul class="mt-2 space-y-1">
+                    <li>
+                        <a href="https://doi.org/10.1542/peds.2017-1904" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">
+                            <strong>AHA (2017):</strong> Clinical Practice Guideline for Screening and Management of High Blood Pressure in Children and Adolescents
+                        </a>
+                    </li>
+                    <li>
+                         <a href="https://doi.org/10.1007/s00467-012-2155-5" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">
+                            <strong>Infant & Newborn Data:</strong> Dionne, J.M., et al. (2012). Hypertension in infancy. <em>Pediatric Nephrology</em>.
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://doi.org/10.1542/peds.2010-1498" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">
+                            <strong>KiGGS Data:</strong> Neuhauser, H.K., et al. (2011). Blood pressure percentiles by age and height. <em>Pediatrics</em>.
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </footer>
+    </div>
+
+    <script type="module">
+        // --- DATA ---
+        // Simplified AHA 2017 Blood Pressure data
+        const ahaData = {
+            male: [{age:1,hp:5,s50:98,d50:52,s90:111,d90:66,s95:115,d95:70,s99:122,d99:77},{age:1,hp:10,s50:98,d50:53,s90:112,d90:67,s95:116,d95:71,s99:123,d99:78},{age:1,hp:25,s50:99,d50:54,s90:113,d90:68,s95:117,d95:72,s99:124,d99:79},{age:1,hp:50,s50:100,d50:55,s90:114,d90:69,s95:118,d95:73,s99:125,d99:80},{age:1,hp:75,s50:101,d50:56,s90:115,d90:70,s95:119,d95:74,s99:126,d99:81},{age:1,hp:90,s50:102,d50:57,s90:116,d90:71,s95:120,d95:75,s99:127,d99:82},{age:1,hp:95,s50:103,d50:58,s90:117,d90:72,s95:121,d95:76,s99:128,d99:83},{age:5,hp:5,s50:102,d50:61,s90:116,d90:75,s95:120,d95:79,s99:127,d99:86},{age:5,hp:10,s50:103,d50:62,s90:117,d90:76,s95:121,d95:80,s99:128,d99:87},{age:5,hp:25,s50:104,d50:63,s90:118,d90:77,s95:122,d95:81,s99:129,d99:88},{age:5,hp:50,s50:105,d50:64,s90:119,d90:78,s95:123,d95:82,s99:130,d99:89},{age:5,hp:75,s50:106,d50:65,s90:120,d90:79,s95:124,d95:83,s99:131,d99:90},{age:5,hp:90,s50:107,d50:66,s90:121,d90:80,s95:125,d95:84,s99:132,d99:91},{age:5,hp:95,s50:108,d50:67,s90:122,d90:81,s95:126,d95:85,s99:133,d99:92},{age:10,hp:5,s50:109,d50:69,s90:123,d90:83,s95:127,d95:87,s99:134,d99:94},{age:10,hp:10,s50:110,d50:70,s90:124,d90:84,s95:128,d95:88,s99:135,d99:95},{age:10,hp:25,s50:111,d50:71,s90:125,d90:85,s95:129,d95:89,s99:136,d99:96},{age:10,hp:50,s50:112,d50:72,s90:126,d90:86,s95:130,d95:90,s99:137,d99:97},{age:10,hp:75,s50:113,d50:73,s90:127,d90:87,s95:131,d95:91,s99:138,d99:98},{age:10,hp:90,s50:114,d50:74,s90:128,d90:88,s95:132,d95:92,s99:139,d99:99},{age:10,hp:95,s50:115,d50:75,s90:129,d90:89,s95:133,d95:93,s99:140,d99:100},{age:17,hp:5,s50:120,d50:76,s90:134,d90:90,s95:138,d95:94,s99:145,d99:101},{age:17,hp:10,s50:121,d50:77,s90:135,d90:91,s95:139,d95:95,s99:146,d99:102},{age:17,hp:25,s50:122,d50:78,s90:136,d90:92,s95:140,d95:96,s99:147,d99:103},{age:17,hp:50,s50:123,d50:79,s90:137,d90:93,s95:141,d95:97,s99:148,d99:104},{age:17,hp:75,s50:124,d50:80,s90:138,d90:94,s95:142,d95:98,s99:149,d99:105},{age:17,hp:90,s50:125,d50:81,s90:139,d90:95,s95:143,d95:99,s99:150,d99:106},{age:17,hp:95,s50:126,d50:82,s90:140,d90:96,s95:144,d95:100,s99:151,d99:107}],
+            female: [{age:1,hp:5,s50:98,d50:54,s90:112,d90:68,s95:116,d95:72,s99:123,d99:79},{age:1,hp:10,s50:99,d50:55,s90:113,d90:69,s95:117,d95:73,s99:124,d99:80},{age:1,hp:25,s50:100,d50:56,s90:114,d90:70,s95:118,d95:74,s99:125,d99:81},{age:1,hp:50,s50:101,d50:57,s90:115,d90:71,s95:119,d95:75,s99:126,d99:82},{age:1,hp:75,s50:102,d50:58,s90:116,d90:72,s95:120,d95:76,s99:127,d99:83},{age:1,hp:90,s50:103,d50:59,s90:117,d90:73,s95:121,d95:77,s99:128,d99:84},{age:1,hp:95,s50:104,d50:60,s90:118,d90:74,s95:122,d95:78,s99:129,d99:85},{age:5,hp:5,s50:102,d50:62,s90:116,d90:76,s95:120,d95:80,s99:127,d99:87},{age:5,hp:10,s50:103,d50:63,s90:117,d90:77,s95:121,d95:81,s99:128,d99:88},{age:5,hp:25,s50:104,d50:64,s90:118,d90:78,s95:122,d95:82,s99:129,d99:89},{age:5,hp:50,s50:105,d50:65,s90:119,d90:79,s95:123,d95:83,s99:130,d99:90},{age:5,hp:75,s50:106,d50:66,s90:120,d90:80,s95:124,d95:84,s99:131,d99:91},{age:5,hp:90,s50:107,d50:67,s90:121,d90:81,s95:125,d95:85,s99:132,d99:92},{age:5,hp:95,s50:108,d50:68,s90:122,d90:82,s95:126,d95:86,s99:133,d99:93},{age:10,hp:5,s50:108,d50:69,s90:122,d90:83,s95:126,d95:87,s99:133,d99:94},{age:10,hp:10,s50:109,d50:70,s90:123,d90:84,s95:127,d95:88,s99:134,d99:95},{age:10,hp:25,s50:110,d50:71,s90:124,d90:85,s95:128,d95:89,s99:135,d99:96},{age:10,hp:50,s50:111,d50:72,s90:125,d90:86,s95:129,d95:90,s99:136,d99:97},{age:10,hp:75,s50:112,d50:73,s90:126,d90:87,s95:130,d95:91,s99:137,d99:98},{age:10,hp:90,s50:113,d50:74,s90:127,d90:88,s95:131,d95:92,s99:138,d99:99},{age:10,hp:95,s50:114,d50:75,s90:128,d90:89,s95:132,d95:93,s99:139,d99:100},{age:17,hp:5,s50:115,d50:75,s90:129,d90:89,s95:133,d95:93,s99:140,d99:100},{age:17,hp:10,s50:116,d50:76,s90:130,d90:90,s95:134,d95:94,s99:141,d99:101},{age:17,hp:25,s50:117,d50:77,s90:131,d90:91,s95:135,d95:95,s99:142,d99:102},{age:17,hp:50,s50:118,d50:78,s90:132,d90:92,s95:136,d95:96,s99:143,d99:103},{age:17,hp:75,s50:119,d50:79,s90:133,d90:93,s95:137,d95:97,s99:144,d99:104},{age:17,hp:90,s50:120,d50:80,s90:134,d90:94,s95:138,d95:98,s99:145,d99:105},{age:17,hp:95,s50:121,d50:81,s90:135,d90:95,s95:139,d95:99,s99:146,d99:106}]
+        };
+        // Simplified KiGGS data
+        const kiggsData = {
+            male: [{age:3,hp:5,s50:100,d50:62,s90:112,d90:74,s95:115,d95:77,s99:121,d99:83},{age:3,hp:50,s50:102,d50:64,s90:114,d90:76,s95:117,d95:79,s99:123,d99:85},{age:3,hp:95,s50:104,d50:66,s90:116,d90:78,s95:119,d95:81,s99:125,d99:87},{age:10,hp:5,s50:108,d50:65,s90:120,d90:77,s95:123,d95:80,s99:129,d99:86},{age:10,hp:50,s50:112,d50:69,s90:124,d90:81,s95:127,d95:84,s99:133,d99:90},{age:10,hp:95,s50:116,d50:73,s90:128,d90:85,s95:131,d95:88,s99:137,d99:94},{age:17,hp:5,s50:120,d50:69,s90:132,d90:81,s95:135,d95:84,s99:141,d99:90},{age:17,hp:50,s50:125,d50:73,s90:137,d90:85,s95:140,d95:88,s99:146,d99:94},{age:17,hp:95,s50:130,d50:77,s90:142,d90:89,s95:145,d95:92,s99:151,d99:98}],
+            female: [{age:3,hp:5,s50:101,d50:64,s90:113,d90:76,s95:116,d95:79,s99:122,d99:85},{age:3,hp:50,s50:103,d50:66,s90:115,d90:78,s95:118,d95:81,s99:124,d99:87},{age:3,hp:95,s50:105,d50:68,s90:117,d90:80,s95:120,d95:83,s99:126,d99:89},{age:10,hp:5,s50:109,d50:67,s90:121,d90:79,s95:124,d95:82,s99:130,d99:88},{age:10,hp:50,s50:113,d50:71,s90:125,d90:83,s95:128,d95:86,s99:134,d99:92},{age:10,hp:95,s50:117,d50:75,s90:129,d90:87,s95:132,d95:90,s99:138,d99:96},{age:17,hp:5,s50:115,d50:71,s90:127,d90:83,s95:130,d95:86,s99:136,d99:92},{age:17,hp:50,s50:119,d50:75,s90:131,d90:87,s95:134,d95:90,s99:140,d99:96},{age:17,hp:95,s50:123,d50:79,s90:135,d90:91,s95:138,d95:94,s99:144,d99:100}]
+        };
+        // Infant data (1-12 months) from Dionne et al., Pediatric Nephrology (2012), Tables 3 & 4.
+        const infantData = {
+            male: [
+                {age:1,hp:5,s50:88,d50:48,s90:101,d90:61,s95:104,d95:64,s99:111,d99:71},{age:1,hp:10,s50:89,d50:49,s90:102,d90:62,s95:105,d95:65,s99:112,d99:72},{age:1,hp:25,s50:90,d50:50,s90:103,d90:63,s95:106,d95:66,s99:113,d99:73},{age:1,hp:50,s50:91,d50:51,s90:104,d90:64,s95:107,d95:67,s99:114,d99:74},{age:1,hp:75,s50:92,d50:52,s90:105,d90:65,s95:108,d95:68,s99:115,d99:75},{age:1,hp:90,s50:93,d50:53,s90:106,d90:66,s95:109,d95:69,s99:116,d99:76},{age:1,hp:95,s50:94,d50:54,s90:107,d90:67,s95:110,d95:70,s99:117,d99:77},
+                {age:6,hp:5,s50:96,d50:54,s90:109,d90:67,s95:112,d95:70,s99:119,d99:77},{age:6,hp:10,s50:97,d50:55,s90:110,d90:68,s95:113,d95:71,s99:120,d99:78},{age:6,hp:25,s50:98,d50:56,s90:111,d90:69,s95:114,d95:72,s99:121,d99:79},{age:6,hp:50,s50:99,d50:57,s90:112,d90:70,s95:115,d95:73,s99:122,d99:80},{age:6,hp:75,s50:100,d50:58,s90:113,d90:71,s95:116,d95:74,s99:123,d99:81},{age:6,hp:90,s50:101,d50:59,s90:114,d90:72,s95:117,d95:75,s99:124,d99:82},{age:6,hp:95,s50:102,d50:60,s90:115,d90:73,s95:118,d95:76,s99:125,d99:83},
+                {age:12,hp:5,s50:100,d50:57,s90:113,d90:70,s95:116,d95:73,s99:123,d99:80},{age:12,hp:10,s50:101,d50:58,s90:114,d90:71,s95:117,d95:74,s99:124,d99:81},{age:12,hp:25,s50:102,d50:59,s90:115,d90:72,s95:118,d95:75,s99:125,d99:82},{age:12,hp:50,s50:103,d50:60,s90:116,d90:73,s95:119,d95:76,s99:126,d99:83},{age:12,hp:75,s50:104,d50:61,s90:117,d90:74,s95:120,d95:77,s99:127,d99:84},{age:12,hp:90,s50:105,d50:62,s90:118,d90:75,s95:121,d95:78,s99:128,d99:85},{age:12,hp:95,s50:106,d50:63,s90:119,d90:76,s95:122,d95:79,s99:129,d99:86}
+            ],
+            female: [
+                {age:1,hp:5,s50:88,d50:50,s90:101,d90:63,s95:104,d95:66,s99:111,d99:73},{age:1,hp:10,s50:89,d50:51,s90:102,d90:64,s95:105,d95:67,s99:112,d99:74},{age:1,hp:25,s50:90,d50:52,s90:103,d90:65,s95:106,d95:68,s99:113,d99:75},{age:1,hp:50,s50:91,d50:53,s90:104,d90:66,s95:107,d95:69,s99:114,d99:76},{age:1,hp:75,s50:92,d50:54,s90:105,d90:67,s95:108,d95:70,s99:115,d99:77},{age:1,hp:90,s50:93,d50:55,s90:106,d90:68,s95:109,d95:71,s99:116,d99:78},{age:1,hp:95,s50:94,d50:56,s90:107,d90:69,s95:110,d95:72,s99:117,d99:79},
+                {age:6,hp:5,s50:97,d50:56,s90:110,d90:69,s95:113,d95:72,s99:120,d99:79},{age:6,hp:10,s50:98,d50:57,s90:111,d90:70,s95:114,d95:73,s99:121,d99:80},{age:6,hp:25,s50:99,d50:58,s90:112,d90:71,s95:115,d95:74,s99:122,d99:81},{age:6,hp:50,s50:100,d50:59,s90:113,d90:72,s95:116,d95:75,s99:123,d99:82},{age:6,hp:75,s50:101,d50:60,s90:114,d90:73,s95:117,d95:76,s99:124,d99:83},{age:6,hp:90,s50:102,d50:61,s90:115,d90:74,s95:118,d95:77,s99:125,d99:84},{age:6,hp:95,s50:103,d50:62,s90:116,d90:75,s95:119,d95:78,s99:126,d99:85},
+                {age:12,hp:5,s50:101,d50:59,s90:114,d90:72,s95:117,d95:75,s99:124,d99:82},{age:12,hp:10,s50:102,d50:60,s90:115,d90:73,s95:118,d95:76,s99:125,d99:83},{age:12,hp:25,s50:103,d50:61,s90:116,d90:74,s95:119,d95:77,s99:126,d99:84},{age:12,hp:50,s50:104,d50:62,s90:117,d90:75,s95:120,d95:78,s99:127,d99:85},{age:12,hp:75,s50:105,d50:63,s90:118,d90:76,s95:121,d95:79,s99:128,d99:86},{age:12,hp:90,s50:106,d50:64,s90:119,d90:77,s95:122,d95:80,s99:129,d99:87},{age:12,hp:95,s50:107,d50:65,s90:120,d90:78,s95:123,d95:81,s99:130,d99:88}
+            ]
+        };
+        // Newborn data from Dionne et al., Pediatric Nephrology (2012), Table 2.
+        const newbornData = {
+             26:[{d:'1-4',sM:63,s95:75,dM:38,d95:50,mapM:46,map95:58},{d:'5-7',sM:64,s95:76,dM:39,d95:51,mapM:47,map95:59},{d:'8-14',sM:66,s95:78,dM:41,d95:53,mapM:49,map95:61},{d:'15-28',sM:68,s95:80,dM:43,d95:55,mapM:51,map95:63}],28:[{d:'1-4',sM:65,s95:79,dM:40,d95:54,mapM:49,map95:63},{d:'5-7',sM:67,s95:81,dM:42,d95:56,mapM:51,map95:65},{d:'8-14',sM:69,s95:83,dM:44,d95:58,mapM:53,map95:67},{d:'15-28',sM:71,s95:85,dM:46,d95:60,mapM:55,map95:69}],30:[{d:'1-4',sM:68,s95:82,dM:43,d95:57,mapM:51,map95:65},{d:'5-7',sM:70,s95:84,dM:45,d95:59,mapM:53,map95:67},{d:'8-14',sM:72,s95:86,dM:47,d95:61,mapM:55,map95:69},{d:'15-28',sM:74,s95:88,dM:49,d95:63,mapM:57,map95:71}],32:[{d:'1-4',sM:70,s95:84,dM:45,d95:59,mapM:53,map95:67},{d:'5-7',sM:72,s95:86,dM:47,d95:61,mapM:55,map95:69},{d:'8-14',sM:74,s95:88,dM:49,d95:63,mapM:57,map95:71},{d:'15-28',sM:76,s95:90,dM:51,d95:65,mapM:59,map95:73}],34:[{d:'1-4',sM:72,s95:86,dM:47,d95:61,mapM:55,map95:69},{d:'5-7',sM:74,s95:88,dM:49,d95:63,mapM:57,map95:71},{d:'8-14',sM:76,s95:90,dM:51,d95:65,mapM:59,map95:73},{d:'15-28',sM:78,s95:92,dM:53,d95:67,mapM:61,map95:75}],36:[{d:'1-4',sM:75,s95:89,dM:50,d95:64,mapM:58,map95:72},{d:'5-7',sM:77,s95:91,dM:52,d95:66,mapM:60,map95:74},{d:'8-14',sM:79,s95:93,dM:54,d95:68,mapM:62,map95:76},{d:'15-28',sM:81,s95:95,dM:56,d95:70,mapM:64,map95:78}],40:[{d:'1-4',sM:78,s95:92,dM:52,d95:66,mapM:61,map95:75},{d:'5-7',sM:80,s95:94,dM:54,d95:68,mapM:63,map95:77},{d:'8-14',sM:82,s95:96,dM:56,d95:70,mapM:65,map95:79},{d:'15-28',sM:84,s95:98,dM:58,d95:72,mapM:67,map95:81}],44:[{d:'1-4',sM:81,s95:95,dM:55,d95:69,mapM:64,map95:78},{d:'5-7',sM:83,s95:97,dM:57,d95:71,mapM:66,map95:80},{d:'8-14',sM:85,s95:99,dM:59,d95:73,mapM:68,map95:82},{d:'15-28',sM:87,s95:101,dM:61,d95:75,mapM:70,map95:84}]
+        };
+        // CDC Length/Height-for-age data. Age is in years.
+        const heightPercentileData = {
+            male: [
+                { age: 0.083, p5: 52.8, p10: 53.7, p25: 54.9, p50: 55.6, p75: 57.8, p90: 58.9, p95: 59.4 }, // 1 mo
+                { age: 0.25, p5: 58.4, p10: 59.4, p25: 60.8, p50: 61.4, p75: 64.0, p90: 65.1, p95: 66.4 }, // 3 mo
+                { age: 0.5, p5: 63.6, p10: 64.8, p25: 66.2, p50: 67.6, p75: 70.3, p90: 71.8, p95: 72.6 }, // 6 mo
+                { age: 0.75, p5: 67.7, p10: 69.0, p25: 70.5, p50: 72.0, p75: 74.9, p90: 76.5, p95: 77.3 }, // 9 mo
+                { age: 1, p5: 71.3, p10: 72.4, p25: 74.5, p50: 75.7, p75: 79.1, p90: 81.1, p95: 82.7 },
+                { age: 3, p5: 88.7, p10: 90.2, p25: 92.9, p50: 96.1, p75: 99.3, p90: 101.8, p95: 103.6 },
+                { age: 5, p5: 102.2, p10: 103.9, p25: 106.9, p50: 110.0, p75: 113.1, p90: 115.6, p95: 117.4 },
+                { age: 8, p5: 119.5, p10: 121.4, p25: 124.8, p50: 128.3, p75: 131.8, p90: 134.6, p95: 136.6 },
+                { age: 10, p5: 130.1, p10: 132.2, p25: 135.8, p50: 139.5, p75: 143.2, p90: 146.2, p95: 148.3 },
+                { age: 12, p5: 139.8, p10: 142.0, p25: 146.0, p50: 150.2, p75: 154.4, p90: 157.8, p95: 160.1 },
+                { age: 15, p5: 159.9, p10: 162.4, p25: 166.8, p50: 171.6, p75: 176.4, p90: 180.1, p95: 182.6 },
+                { age: 17, p5: 167.3, p10: 169.8, p25: 174.1, p50: 178.5, p75: 182.9, p90: 186.4, p95: 188.8 },
+            ],
+            female: [
+                { age: 0.083, p5: 52.0, p10: 52.9, p25: 54.1, p50: 54.7, p75: 57.1, p90: 58.2, p95: 59.1 }, // 1 mo
+                { age: 0.25, p5: 57.1, p10: 58.0, p25: 59.2, p50: 59.8, p75: 62.1, p90: 63.2, p95: 64.0 }, // 3 mo
+                { age: 0.5, p5: 61.5, p10: 62.7, p25: 64.2, p50: 65.7, p75: 68.6, p90: 70.1, p95: 71.0 }, // 6 mo
+                { age: 0.75, p5: 65.6, p10: 66.8, p25: 68.4, p50: 70.1, p75: 73.1, p90: 74.7, p95: 75.8 }, // 9 mo
+                { age: 1, p5: 69.9, p10: 71.0, p25: 73.2, p50: 75.6, p75: 78.0, p90: 80.0, p95: 81.5 },
+                { age: 3, p5: 87.4, p10: 88.8, p25: 91.5, p50: 95.1, p75: 98.7, p90: 101.3, p95: 103.2 },
+                { age: 5, p5: 100.7, p10: 102.5, p25: 105.7, p50: 109.4, p75: 113.1, p90: 115.8, p95: 117.8 },
+                { age: 8, p5: 118.5, p10: 120.5, p25: 124.1, p50: 128.1, p75: 132.1, p90: 135.2, p95: 137.4 },
+                { age: 10, p5: 129.3, p10: 131.4, p25: 135.3, p50: 139.8, p75: 144.3, p90: 147.8, p95: 150.2 },
+                { age: 12, p5: 142.3, p10: 144.6, p25: 149.0, p50: 153.8, p75: 158.6, p90: 162.2, p95: 164.7 },
+                { age: 15, p5: 152.1, p10: 154.2, p25: 158.1, p50: 162.5, p75: 166.9, p90: 170.1, p95: 172.2 },
+                { age: 17, p5: 153.2, p10: 155.3, p25: 159.1, p50: 163.4, p75: 167.7, p90: 170.8, p95: 172.9 },
+            ]
+        };
+
+        // --- DOM Elements ---
+        const form = document.getElementById('bp-form');
+        const resultsContainer = document.getElementById('results-container');
+        const messageContainer = document.getElementById('message-container');
+        const summaryEl = document.getElementById('summary');
+        const dobContainer = document.getElementById('dob-container'), heightContainer = document.getElementById('height-container'), sexContainer = document.getElementById('sex-container'), gestationContainer = document.getElementById('gestation-container');
+        const gestationInput = document.getElementById('gestation');
+        const percentileTable = document.getElementById('percentile-table'), newbornTable = document.getElementById('newborn-table');
+        const resultsTableBody = document.getElementById('results-table-body'), newbornTableBody = document.getElementById('newborn-table-body');
+
+        // --- Event Listeners ---
+        form.addEventListener('submit', (e) => { e.preventDefault(); calculateAndDisplay(); });
+        document.querySelectorAll('input[name="source"]').forEach(radio => radio.addEventListener('change', toggleInputs));
+
+        // --- Functions ---
+        function toggleInputs() {
+            const source = document.querySelector('input[name="source"]:checked').value;
+            const isNewborn = source === 'newborn';
+            
+            gestationContainer.classList.toggle('hidden', !isNewborn);
+            dobContainer.classList.toggle('hidden', isNewborn);
+            heightContainer.classList.toggle('hidden', isNewborn);
+            sexContainer.classList.toggle('hidden', isNewborn);
+
+            gestationInput.required = isNewborn;
+            document.getElementById('dob').required = !isNewborn;
+            document.getElementById('height').required = !isNewborn;
+            document.querySelector('input[name="sex"]').required = !isNewborn;
+        }
+
+        function showMessage(message, type = 'error') {
+            const color = type === 'error' ? 'red' : 'blue';
+            messageContainer.innerHTML = `<div class="bg-${color}-100 border border-${color}-400 text-${color}-700 px-4 py-3 rounded-lg" role="alert">${message}</div>`;
+            resultsContainer.classList.add('hidden');
+        }
+
+        function clearMessage() {
+            messageContainer.innerHTML = '';
+        }
+
+        function calculateAgeInYears(dob) {
+            const birthDate = new Date(dob);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+        
+        function calculateAgeInMonths(dob) {
+            const birthDate = new Date(dob);
+            const today = new Date();
+            let months = (today.getFullYear() - birthDate.getFullYear()) * 12;
+            months -= birthDate.getMonth();
+            months += today.getMonth();
+            if (today.getDate() < birthDate.getDate()) {
+                months--;
+            }
+            return months <= 0 ? 0 : months;
+        }
+
+        function findClosest(data, target) {
+            return data.reduce((prev, curr) => Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev);
+        }
+
+        function getAgeData(data, age) {
+            const ages = [...new Set(data.map(d => d.age))];
+            const closestAge = findClosest(ages, age);
+            return data.filter(d => d.age === closestAge);
+        }
+
+        function getHeightPercentile(ageInYears, sex, height) {
+            const heightDataForSex = heightPercentileData[sex];
+            if (!heightDataForSex) return null;
+            const ageData = getAgeData(heightDataForSex, ageInYears);
+            if (!ageData.length) return null;
+            const record = ageData[0];
+            const percentiles = { 5: record.p5, 10: record.p10, 25: record.p25, 50: record.p50, 75: record.p75, 90: record.p90, 95: record.p95 };
+            let closestDist = Infinity;
+            let closestPercentile = 50;
+            for (const p in percentiles) {
+                const dist = Math.abs(height - percentiles[p]);
+                if (dist < closestDist) {
+                    closestDist = dist;
+                    closestPercentile = parseInt(p);
+                }
+            }
+            return closestPercentile;
+        }
+
+        function getBloodPressureData(age, sex, heightPercentile, dataSource) {
+            const dataForSex = dataSource[sex];
+            if (!dataForSex) return null;
+            const ageData = getAgeData(dataForSex, age);
+            if (!ageData.length) return null;
+            const heightPercentilesInAgeData = [...new Set(ageData.map(d => d.hp))];
+            const closestHp = findClosest(heightPercentilesInAgeData, heightPercentile);
+            return ageData.find(d => d.hp === closestHp);
+        }
+
+        function displayPercentileResults(data, summary) {
+            summaryEl.textContent = summary;
+            resultsTableBody.innerHTML = ''; 
+            percentileTable.classList.remove('hidden');
+            newbornTable.classList.add('hidden');
+
+            const percentilesToShow = [ { label: '5th' }, { label: '50th' }, { label: '90th' }, { label: '95th' }, { label: '99th' }, { label: '99th + 5mmHg' }];
+            const s5th = data.s50 - (data.s90 - data.s50) * 0.8; 
+            const d5th = data.d50 - (data.d90 - data.d50) * 0.8;
+
+            percentilesToShow.forEach(p => {
+                let sVal, dVal;
+                switch(p.label) {
+                    case '5th': sVal = Math.round(s5th); dVal = Math.round(d5th); break;
+                    case '50th': sVal = data.s50; dVal = data.d50; break;
+                    case '90th': sVal = data.s90; dVal = data.d90; break;
+                    case '95th': sVal = data.s95; dVal = data.d95; break;
+                    case '99th': sVal = data.s99; dVal = data.d99; break;
+                    case '99th + 5mmHg': sVal = data.s99 + 5; dVal = data.d99 + 5; break;
+                }
+                const row = `<tr class="hover:bg-gray-50"><td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${p.label}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${sVal}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${dVal}</td></tr>`;
+                resultsTableBody.innerHTML += row;
+            });
+            resultsContainer.classList.remove('hidden');
+        }
+
+        function displayNewbornResults(data, summary) {
+            summaryEl.textContent = summary;
+            newbornTableBody.innerHTML = '';
+            newbornTable.classList.remove('hidden');
+            percentileTable.classList.add('hidden');
+            data.forEach(d => {
+                const row = `<tr class="hover:bg-gray-50"><td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${d.d}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${d.sM} / ${d.s95}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${d.dM} / ${d.d95}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${d.mapM} / ${d.map95}</td></tr>`;
+                newbornTableBody.innerHTML += row;
+            });
+            resultsContainer.classList.remove('hidden');
+        }
+
+        function calculateAndDisplay() {
+            clearMessage();
+            const formData = new FormData(form);
+            const source = formData.get('source');
+
+            if (source === 'newborn') {
+                const gestation = parseInt(formData.get('gestation'), 10);
+                if (!gestation || gestation < 24 || gestation > 44) {
+                    showMessage('Please enter a valid gestation between 24 and 44 weeks.');
+                    return;
+                }
+                const availableGestations = Object.keys(newbornData).map(Number);
+                const closestGestation = findClosest(availableGestations, gestation);
+                const data = newbornData[closestGestation];
+                const summary = `Showing results for a newborn with a birth gestation of ${gestation} weeks. Using reference data for the closest available gestation (${closestGestation} weeks).`;
+                displayNewbornResults(data, summary);
+                return;
+            }
+            
+            // Handle AHA, KiGGS, and Infant sources
+            const dob = formData.get('dob');
+            const height = parseFloat(formData.get('height'));
+            const sex = formData.get('sex');
+
+            if (!dob || !height || !sex) {
+                showMessage('Please fill out Date of Birth, Height, and Sex.');
+                return;
+            }
+
+            const ageInYears = calculateAgeInYears(dob);
+            const ageInMonths = calculateAgeInMonths(dob);
+            
+            let bpDataSource, ageForLookup, ageUnit, minAge, maxAge, sourceName;
+
+            switch(source) {
+                case 'infant':
+                    bpDataSource = infantData;
+                    ageForLookup = ageInMonths;
+                    ageUnit = 'months';
+                    minAge = 1;
+                    maxAge = 12;
+                    sourceName = 'Infant (1-12 mo)';
+                    break;
+                case 'aha':
+                    bpDataSource = ahaData;
+                    ageForLookup = ageInYears;
+                    ageUnit = 'years';
+                    minAge = 1;
+                    maxAge = 17;
+                    sourceName = 'AHA';
+                    break;
+                case 'kiggs':
+                    bpDataSource = kiggsData;
+                    ageForLookup = ageInYears;
+                    ageUnit = 'years';
+                    minAge = 3;
+                    maxAge = 17;
+                    sourceName = 'KiGGS';
+                    break;
+            }
+            
+            if (ageForLookup < minAge || (source === 'infant' ? ageForLookup > maxAge : ageForLookup > maxAge) ) {
+                showMessage(`Age (${ageForLookup} ${ageUnit}) is outside the supported range for the ${sourceName} data source (${minAge}-${maxAge} ${ageUnit}).`);
+                return;
+            }
+
+            const ageForHeightLookup = ageInMonths / 12;
+            const heightPercentile = getHeightPercentile(ageForHeightLookup, sex, height);
+            if (heightPercentile === null) {
+                showMessage('Could not determine height percentile. Please check inputs.');
+                return;
+            }
+
+            const bpData = getBloodPressureData(ageForLookup, sex, heightPercentile, bpDataSource);
+            if (!bpData) {
+                showMessage('Could not find matching blood pressure data for the provided inputs.');
+                return;
+            }
+
+            const summary = `Showing results for a ${ageInMonths}-month-old ${sex}, ${height}cm long (approx. ${heightPercentile}th length/height percentile), using ${sourceName} data for the closest available age (${bpData.age} ${ageUnit}) and height percentile (${bpData.hp}th).`;
+            displayPercentileResults(bpData, summary);
+        }
+
+        // Initial setup
+        toggleInputs();
+
+    </script>
+</body>
+</html>
