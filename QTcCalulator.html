@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QTc Calculator (Bazett Formula)</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+        .result-card {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .result-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="card w-full max-w-md p-6 sm:p-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">QTc Calculator</h1>
+            <p class="text-gray-500 mt-1">Using Bazett's Formula</p>
+        </div>
+
+        <!-- Form -->
+        <form id="qtcForm" class="space-y-6">
+            <!-- QT Interval Input -->
+            <div>
+                <label for="qtInterval" class="block text-sm font-medium text-gray-700">QT Interval</label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    <input type="number" id="qtInterval" class="block w-full p-3 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., 400" required>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <span class="text-gray-500 sm:text-sm">ms</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculation Mode Selection -->
+            <fieldset>
+                <legend class="text-sm font-medium text-gray-700 mb-2">Calculate using:</legend>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <input id="useHr" name="calculationMode" type="radio" value="hr" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" checked>
+                        <label for="useHr" class="ml-2 block text-sm text-gray-900">Heart Rate</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input id="useRr" name="calculationMode" type="radio" value="rr" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300">
+                        <label for="useRr" class="ml-2 block text-sm text-gray-900">RR Interval</label>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Dynamic Input for HR or RR -->
+            <div id="dynamicInputContainer">
+                <label for="rateValue" id="rateLabel" class="block text-sm font-medium text-gray-700">Heart Rate</label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    <input type="number" id="rateValue" class="block w-full p-3 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., 60" required>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <span id="rateUnit" class="text-gray-500 sm:text-sm">bpm</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculate Button -->
+            <div>
+                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Calculate QTc
+                </button>
+            </div>
+        </form>
+
+        <!-- Result Display -->
+        <div id="resultContainer" class="result-card mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-800 text-center">Result</h2>
+            <div class="mt-4 text-center">
+                <p class="text-4xl font-bold text-indigo-600"><span id="qtcResult">--</span> ms</p>
+            </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="mt-8 text-center text-xs text-gray-500">
+            <p>Calculated using <a href="https://en.wikipedia.org/wiki/Bazett%27s_formula" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-700">Bazett's Formula</a>.</p>
+            <p class="mt-1 font-semibold">This tool is for illustrative purposes only and should not be used for medical decision-making.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Element References ---
+        const qtcForm = document.getElementById('qtcForm');
+        const calculationModeRadios = document.querySelectorAll('input[name="calculationMode"]');
+        const dynamicInputContainer = document.getElementById('dynamicInputContainer');
+        const rateLabel = document.getElementById('rateLabel');
+        const rateValueInput = document.getElementById('rateValue');
+        const rateUnit = document.getElementById('rateUnit');
+        const qtIntervalInput = document.getElementById('qtInterval');
+        
+        const resultContainer = document.getElementById('resultContainer');
+        const qtcResultElem = document.getElementById('qtcResult');
+
+        // --- Event Listeners ---
+
+        // Listen for changes in the calculation mode (Heart Rate vs RR Interval)
+        calculationModeRadios.forEach(radio => {
+            radio.addEventListener('change', handleModeChange);
+        });
+
+        // Listen for form submission
+        qtcForm.addEventListener('submit', handleFormSubmit);
+
+        // --- Functions ---
+
+        /**
+         * Updates the UI when the calculation mode changes.
+         * It adjusts the label, placeholder, and unit for the dynamic input field.
+         */
+        function handleModeChange() {
+            const selectedMode = document.querySelector('input[name="calculationMode"]:checked').value;
+            if (selectedMode === 'hr') {
+                rateLabel.textContent = 'Heart Rate';
+                rateValueInput.placeholder = 'e.g., 60';
+                rateUnit.textContent = 'bpm';
+            } else {
+                rateLabel.textContent = 'RR Interval';
+                rateValueInput.placeholder = 'e.g., 1000';
+                rateUnit.textContent = 'ms';
+            }
+        }
+
+        /**
+         * Handles the form submission, performs calculations, and displays the result.
+         * @param {Event} event - The form submission event.
+         */
+        function handleFormSubmit(event) {
+            event.preventDefault(); // Prevent the default form submission behavior
+
+            // Get input values and convert them to numbers
+            const qtInterval = parseFloat(qtIntervalInput.value);
+            const rateValue = parseFloat(rateValueInput.value);
+            const selectedMode = document.querySelector('input[name="calculationMode"]:checked').value;
+
+            // Input validation
+            if (isNaN(qtInterval) || isNaN(rateValue) || qtInterval <= 0 || rateValue <= 0) {
+                alert('Please enter valid, positive numbers for all fields.');
+                return;
+            }
+
+            let rrIntervalInSeconds;
+
+            // Calculate RR interval in seconds based on the selected mode
+            if (selectedMode === 'hr') {
+                // If Heart Rate (bpm) is given, calculate RR interval in seconds
+                rrIntervalInSeconds = 60 / rateValue;
+            } else {
+                // If RR interval is given in milliseconds, convert it to seconds
+                rrIntervalInSeconds = rateValue / 1000;
+            }
+
+            // Calculate QTc using Bazett's Formula: QTc = QT / sqrt(RR)
+            // QT is in ms, RR must be in seconds. The result is in ms.
+            const qtc = qtInterval / Math.sqrt(rrIntervalInSeconds);
+            
+            // Display the calculated result
+            displayResult(qtc);
+        }
+
+        /**
+         * Displays the calculated QTc in the UI.
+         * @param {number} qtcValue - The calculated QTc value in milliseconds.
+         */
+        function displayResult(qtcValue) {
+            const roundedQtc = Math.round(qtcValue);
+            qtcResultElem.textContent = roundedQtc;
+
+            // Make the result card visible with an animation
+            resultContainer.classList.add('visible');
+        }
+
+        // --- Initial Setup ---
+        // Initialize the view on page load
+        handleModeChange();
+    </script>
+
+</body>
+</html>
