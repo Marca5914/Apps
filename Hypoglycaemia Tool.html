@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neonatal Hypoglycaemia Management Flowchart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-content {
+            transition: transform 0.3s ease-in-out;
+        }
+        .fab-container a, .fab-container button {
+            transition: all 0.2s ease-in-out;
+        }
+        .fab-container:hover .fab-label {
+            max-width: 500px;
+            opacity: 1;
+            margin-right: 0.75rem; /* 12px */
+        }
+        .fab-label {
+            max-width: 0;
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        /* Custom focus styles for better accessibility */
+        .form-input:focus, .form-select:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            --tw-ring-color: #2563eb;
+            --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+            --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+            box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+            border-color: #2563eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Main App Container -->
+    <div class="container mx-auto p-4 sm:p-6 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Neonatal Hypoglycaemia Management</h1>
+            <p class="text-gray-600 mt-2">An interactive guide based on NHSGGC & Right Decisions guidelines.</p>
+        </header>
+
+        <!-- Flowchart Container -->
+        <div id="flowchart-container" class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg max-w-4xl mx-auto min-h-[400px]">
+            <!-- Flowchart steps will be dynamically inserted here -->
+        </div>
+        
+        <!-- Floating Action Buttons Container -->
+        <div class="fixed bottom-6 right-6 flex flex-col items-end space-y-3 z-40">
+            <!-- Guideline Links -->
+             <a href="https://clinicalguidelines.scot.nhs.uk/ggc-paediatric-guidelines/ggc-paediatric-guidelines/neonatology/hypoglycaemia-term-infants-948/?searchTerm=hypoglycaemia%20preterm" target="_blank" rel="noopener noreferrer" class="fab-container flex items-center bg-white text-gray-700 p-4 rounded-full shadow-lg hover:bg-gray-50 hover:text-blue-600">
+                <span class="fab-label text-sm font-semibold">Term Guideline</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+            </a>
+             <a href="https://clinicalguidelines.scot.nhs.uk/ggc-paediatric-guidelines/ggc-paediatric-guidelines/neonatology/hypoglycaemia-preterm-infants-1209/?searchTerm=hypoglycaemia%20preterm" target="_blank" rel="noopener noreferrer" class="fab-container flex items-center bg-white text-gray-700 p-4 rounded-full shadow-lg hover:bg-gray-50 hover:text-blue-600">
+                <span class="fab-label text-sm font-semibold">Preterm Guideline</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+            </a>
+             <a href="https://clinicalguidelines.scot.nhs.uk/ggc-paediatric-guidelines/ggc-paediatric-guidelines/neonatology/persistent-or-refractory-hypoglycaemia-in-the-neonate-a-guideline-for-management-1006/?searchTerm=hypoglycaemia%20preterm" target="_blank" rel="noopener noreferrer" class="fab-container flex items-center bg-white text-gray-700 p-4 rounded-full shadow-lg hover:bg-gray-50 hover:text-blue-600">
+                <span class="fab-label text-sm font-semibold">Persistent Guideline</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+            </a>
+            <!-- GIR Calculator Button -->
+            <button onclick="toggleModal('gir-modal', true)" class="fab-container flex items-center bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform hover:scale-110">
+                 <span class="fab-label text-sm font-semibold">GIR Calculator</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 14h.01M12 17h.01M15 17h.01M9 10h.01M12 10h.01M15 10h.01M3 4a1 1 0 011-1h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V4z" /></svg>
+            </button>
+             <!-- Investigations Button -->
+            <button onclick="toggleModal('investigations-modal', true)" class="fab-container flex items-center bg-purple-600 text-white p-4 rounded-full shadow-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-transform hover:scale-110">
+                 <span class="fab-label text-sm font-semibold">Investigations</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="gir-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 hidden" onclick="handleOverlayClick(event)">
+        <div class="modal-content bg-gray-50 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto transform scale-95" onclick="event.stopPropagation()">
+            <div class="sticky top-0 bg-gray-50 z-10 px-6 pt-6 pb-4 border-b border-gray-200">
+                <div class="flex justify-between items-center"><h2 class="text-2xl font-bold text-gray-900">GIR Calculator</h2><button onclick="toggleModal('gir-modal', false)" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button></div>
+            </div>
+            <div id="gir-calculator-content" class="p-6"></div>
+        </div>
+    </div>
+
+    <div id="investigations-modal" class="modal fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 hidden" onclick="handleOverlayClick(event)">
+        <div class="modal-content bg-gray-50 rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto transform scale-95" onclick="event.stopPropagation()">
+            <div class="sticky top-0 bg-gray-50 z-10 px-6 pt-6 pb-4 border-b border-gray-200">
+                <div class="flex justify-between items-center"><h2 class="text-2xl font-bold text-gray-900">Table 1: Investigations for Refractory/Persistent Hypoglycaemia</h2><button onclick="toggleModal('investigations-modal', false)" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button></div>
+            </div>
+            <div class="p-6">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-300 text-sm">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Type & Investigation</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">How to do it?</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Where does it go? (GG&C)</th>
+                                <th class="px-3 py-2 text-left font-semibold text-gray-700">Guide to interpretation</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <!-- Rows will be inserted by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center p-4 mt-8">
+        <p class="text-xs text-gray-500 max-w-3xl mx-auto">
+            Disclaimer: This tool is based on guidelines available from NHS Greater Glasgow & Clyde and may contain errors. It is for informational purposes only. All clinical decisions should be discussed with relevant senior clinicians and this tool should not be used as a substitute for clinical judgment.
+        </p>
+    </footer>
+
+    <script>
+        // --- GIR CALCULATOR LOGIC (in modal) ---
+        const milkSugarContent = { breast: 7.1, term: 7.1, preterm: 8.5 };
+        function calculateGIR() { /* ... unchanged ... */ }
+        
+        // --- MODAL VISIBILITY ---
+        function toggleModal(modalId, show) { /* ... unchanged ... */ }
+        function handleOverlayClick(event) { /* ... unchanged ... */ }
+
+        // --- FLOWCHART LOGIC ---
+        const flowchartContainer = document.getElementById('flowchart-container');
+        let navigationHistory = [];
+
+        const flowchart = {
+            start: {
+                question: "Select the appropriate guideline for your patient:",
+                answers: [
+                    { text: "Term Infant (≥37 weeks)", next: "term_is_at_risk" },
+                    { text: "Preterm Infant (<37 weeks)", next: "preterm_intro" },
+                    { text: "Persistent or Refractory Hypoglycaemia", next: "persistent_start" }
+                ]
+            },
+            // --- Term Pathway ---
+            term_is_at_risk: { /* ... unchanged ... */ },
+            term_not_at_risk_endpoint: { /* ... unchanged ... */ },
+            term_get_bg_and_symptoms: {
+                question: "For Term 'At Risk' Infant: Enter first glucose and note symptoms to determine pathway.",
+                details: `
+                    <p class="font-semibold mb-2">Follow the appropriate flowchart from the Term Infant Guideline:</p>
+                    <ul class="list-disc pl-6 text-sm text-gray-600 space-y-1">
+                        <li><strong>Flowchart C:</strong> BG < 1.0 mmol/L <strong>OR</strong> any abnormal clinical signs.</li>
+                        <li><strong>Flowchart B:</strong> Pre-feed BG 1.0-1.9 mmol/L and NO abnormal clinical signs.</li>
+                        <li><strong>Flowchart A:</strong> Pre-feed BG 2.0-2.5 mmol/L and NO abnormal clinical signs.</li>
+                    </ul>
+                    <p class="mt-2 text-sm text-gray-600">Abnormal signs include: abnormal cry, apnoea, cyanosis, poor feeding, hypotonia, irritability, jitteriness, seizures, temperature instability.</p>
+                `
+            },
+            term_flowchart_C: { isEndpoint: true, title: "Action (Flowchart C): Urgent IV Treatment Required", content: `<ul class="list-disc pl-5 space-y-2 text-gray-700"><li>Admit to neonatal unit.</li><li>Gain <strong>urgent IV access</strong>.</li><li>Give <strong>2ml/kg of 10% Dextrose</strong> bolus.</li><li>Commence IV infusion of 10% Dextrose at 60-80 ml/kg/day. Use the <strong>GIR Calculator</strong> to aim for 5-8 mg/kg/min.</li><li>Recheck BG 30 minutes after bolus and adjust infusion as needed.</li><li>Encourage normal feeding if tolerated.</li></ul>` },
+            term_flowchart_B: { 
+                title: "Action (Flowchart B): BG 1.0-1.9 mmol/L",
+                isEndpoint: true,
+                content: `
+                    <p class="font-semibold mb-2">Initial Actions:</p>
+                    <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                        <li>Inform Neonatal Doctor/ANP.</li>
+                        <li>Administer a dose of 40% buccal glucose 200mg/kg.</li>
+                        <li>This must be given in conjunction with making and documenting a detailed feeding plan.</li>
+                    </ul>
+                    <p class="font-semibold mt-4 mb-2">Feeding Plan:</p>
+                     <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                        <li><strong>If breast feeding:</strong> Support breast feeding, encourage skin-to-skin, offer breast feed. If not feeding effectively, teach mother to hand express and use breast pump. Give colostrum obtained. Continue to encourage hand expressing at least 8-10x/24 hrs. Ensure families are aware that donor breast milk is an option for supplementation.</li>
+                        <li><strong>If formula fed:</strong> Ensure adequate feed volumes are being given (at least 10ml/kg) in 3-hourly volumes.</li>
+                        <li>If baby is not feeding adequately, consider admission to SCBU/TC for NG feeding.</li>
+                    </ul>
+                     <p class="font-semibold mt-4 mb-2">Next Steps:</p>
+                     <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                        <li>Check blood glucose 30-60 minutes after administration of buccal gel.</li>
+                     </ul>
+                `,
+                actions: [{ text: "Enter Post-Gel Glucose", next: "term_amber_post_gel_input" }]
+            },
+            term_amber_post_gel_input: {
+                question: "Enter the post-gel blood glucose reading.",
+                details: "Enter the BG value measured 30-60 minutes after the buccal gel and feed."
+            },
+            term_amber_ask_second_dose: {
+                question: "The BG is still 1.0-1.9 mmol/L. Was this the first or second dose of buccal gel given for this episode?",
+                answers: [
+                    { text: "This was the FIRST dose", next: "term_amber_give_second_dose" },
+                    { text: "This was the SECOND dose", next: "term_flowchart_C" }
+                ]
+            },
+            term_amber_give_second_dose: {
+                isEndpoint: true,
+                title: "Action: Give Second Dose of Buccal Gel",
+                content: `
+                    <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                        <li>Administer a second dose of buccal gel.</li>
+                        <li>The baby must be reviewed by a member of the neonatal team as soon as is practical.</li>
+                        <li>Repeat blood glucose after 30-60 mins.</li>
+                        <li>If hypoglycaemia of <2.0mmol/L persists after this second dose, or the infant becomes symptomatic, manage as per Red Zone / Flowchart C.</li>
+                    </ul>`
+            },
+            term_amber_stable: {
+                isEndpoint: true,
+                title: "Action: BG Stabilised (≥2.0 mmol/L)",
+                content: `<p class="text-gray-700">The post-gel glucose is now in a safe range. Check blood glucose again before the next feed (no later than 3 hours after the previous feed) as a delayed drop may occur.</p>`
+            },
+            term_flowchart_A: { isEndpoint: true, title: "Action (Flowchart A): Support Feeding", content: `<ul class="list-disc pl-5 space-y-2 text-gray-700"><li>Give <strong>buccal 40% glucose gel</strong> (200mg/kg).</li><li>Encourage normal feeding.</li><li>Continue routine pre-feed BG monitoring.</li><li>If BG drops below 2.0 mmol/L, escalate to Flowchart B management.</li></ul>` },
+            term_stable_bg: { isEndpoint: true, title: "Action: Blood Glucose is Normal", content: `<p class="text-gray-700">BG is ≥ 2.6 mmol/L. Continue routine feeding and monitoring as per local 'at risk' protocol. Recheck BG before the next feed to ensure stability.</p>` },
+            
+            // --- Preterm Pathway ---
+            preterm_intro: { /* ... unchanged ... */ },
+            preterm_get_bg: { /* ... unchanged ... */ },
+            preterm_green_context_query: { /* ... unchanged ... */ },
+            preterm_ask_consecutive_amber: { /* ... unchanged ... */ },
+            preterm_normal_action: { /* ... unchanged ... */ },
+            preterm_green_action_standard: { /* ... unchanged ... */ },
+            preterm_green_after_amber_action: { /* ... unchanged ... */ },
+            preterm_amber_action: { /* ... unchanged ... */ },
+            preterm_red_action: { /* ... unchanged ... */ },
+            
+            // --- Persistent Pathway ---
+            persistent_start: { /* ... unchanged ... */ },
+            persistent_escalation_1: { /* ... unchanged ... */ },
+            persistent_escalation_2: { /* ... unchanged ... */ },
+            persistent_escalation_3: { /* ... unchanged ... */ },
+            persistent_deescalation_1: { /* ... unchanged ... */ },
+            persistent_deescalation_2: { /* ... unchanged ... */ },
+            persistent_deescalation_3: { /* ... unchanged ... */ }
+        };
+        
+        // Populate unchanged flowchart steps
+        Object.assign(flowchart, {
+            term_is_at_risk: { question: "Does the term infant meet any 'at risk' criteria for hypoglycaemia?", details: `<p class="font-semibold mb-2">Risk Factors for Hypoglycaemia:</p><ul class="list-disc pl-6 text-sm text-gray-600 space-y-1"><li>Intrauterine growth restriction in term infants i.e ≥ 37+0 weeks (&lt;2nd centile for sex and gestation).</li><li>Infants less than 37 weeks gestation (up to 36+6 weeks) regardless of weight centile – See separate Preterm Guideline.</li><li>Maternal diabetes – Including both insulin dependent and gestational diabetes.</li><li>Macrosomic babies – Babies who weigh ≥ 4.5 kg.</li><li>Infants of mothers taking B blockers (labetalol, propranolol or atenolol) in the 3rd trimester and/or at the time of delivery.</li><li>Hypothermia - Temperature ≤36.5°C persisting despite measures to treat.</li><li>Hypoxia – Babies who required prolonged resuscitation (> 10 minutes) or with a cord pH &lt;7.1 and/or BE > -12.</li></ul><p class="font-semibold mt-4 mb-2">Birth weight gestational age thresholds for second centile (Kg) by sex:</p><p class="text-xs text-gray-500 mb-2">(If birth weight is less than the threshold, monitoring is required)</p><div class="overflow-x-auto rounded-lg border border-gray-200"><table class="min-w-full divide-y divide-gray-200 text-sm"><thead class="bg-gray-50"><tr><th scope="col" class="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">Gestation (weeks)</th><th scope="col" class="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">Boys Weight (Kg)</th><th scope="col" class="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">Girls Weight (Kg)</th></tr></thead><tbody class="bg-white divide-y divide-gray-200"><tr><td class="px-4 py-2 whitespace-nowrap">37</td><td class="px-4 py-2 whitespace-nowrap">2.1</td><td class="px-4 py-2 whitespace-nowrap">2.0</td></tr><tr><td class="px-4 py-2 whitespace-nowrap">38</td><td class="px-4 py-2 whitespace-nowrap">2.3</td><td class="px-4 py-2 whitespace-nowrap">2.2</td></tr><tr><td class="px-4 py-2 whitespace-nowrap">39</td><td class="px-4 py-2 whitespace-nowrap">2.5</td><td class="px-4 py-2 whitespace-nowrap">2.45</td></tr><tr><td class="px-4 py-2 whitespace-nowrap">40</td><td class="px-4 py-2 whitespace-nowrap">2.65</td><td class="px-4 py-2 whitespace-nowrap">2.6</td></tr><tr><td class="px-4 py-2 whitespace-nowrap">41</td><td class="px-4 py-2 whitespace-nowrap">2.8</td><td class="px-4 py-2 whitespace-nowrap">2.75</td></tr><tr><td class="px-4 py-2 whitespace-nowrap">42</td><td class="px-4 py-2 whitespace-nowrap">2.9</td><td class="px-4 py-2 whitespace-nowrap">2.85</td></tr></tbody></table></div>`, answers: [ { text: "Yes, infant is 'at risk'", next: "term_get_bg_and_symptoms" }, { text: "No, infant is not 'at risk'", next: "term_not_at_risk_endpoint" } ] },
+            preterm_intro: { question: "Preterm Infant Guideline", details: `All infants born at 34+0 - 36+6 week gestation should undergo routine screening for hypoglycaemia as detailed in the <a href="https://clinicalguidelines.scot.nhs.uk/ggc-paediatric-guidelines/ggc-paediatric-guidelines/neonatology/hypoglycaemia-preterm-infants-1209/?searchTerm=hypoglycaemia%20preterm" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold">preterm guideline</a>.`, answers: [{ text: "Proceed to Pathway", next: "preterm_get_bg" }] },
+            preterm_get_bg: { question: "For Preterm Infant: Enter the blood glucose level to determine the pathway.", details: `<ul class="list-disc pl-6 text-sm text-gray-600 space-y-1"><li><strong>Red Zone:</strong> BG < 1.0 mmol/L</li><li><strong>Amber Zone:</strong> BG 1.0 - 1.9 mmol/L</li><li><strong>Green Zone:</strong> BG 2.0 - 2.5 mmol/L</li><li><strong>Normal:</strong> BG > 2.5 mmol/L</li></ul>` },
+            preterm_green_context_query: { question: "For this Green Zone reading (2.0 - 2.5 mmol/L), what was the context?", answers: [ { text: "This is the first reading in this zone (previous was normal)", next: "preterm_green_action_standard" }, { text: "This is the second consecutive reading in the Green Zone", next: "preterm_amber_action" }, { text: "This reading follows a previous reading in the Amber Zone (1.0-1.9)", next: "preterm_green_after_amber_action" } ] },
+            preterm_ask_consecutive_amber: { question: "Is this the first or second consecutive reading in the Amber Zone (1.0 - 1.9 mmol/L)?", answers: [ { text: "First Reading", next: "preterm_amber_action" }, { text: "Second Consecutive Reading", next: "preterm_red_action" } ] },
+            preterm_normal_action: { isEndpoint: true, title: "Action (Normal Pathway): BG > 2.5 mmol/L", content: `<p class="text-gray-700">If 3 consecutive values, at 3-hourly intervals, fall in this zone, monitoring may cease.</p>` },
+            preterm_green_action_standard: { isEndpoint: true, title: "Action (Green Zone): BG 2.0 - 2.5 mmol/L", content: `<p class="font-semibold mb-2">Increased vigilance and feeding support:</p><ul class="list-disc pl-5 space-y-2 text-gray-700"><li>Offer an additional feed if willing and continue frequent feeds at least 3-hourly thereafter.</li><li>Observe a breastfeed and ensure good attachment and effective feeding. Encourage skin contact and biological nurturing. Proactively encourage hand expressing.</li><li>If two consecutive measurements fall within the Green Zone, treat as Amber Pathway.</li></ul>` },
+            preterm_green_after_amber_action: { isEndpoint: true, title: "Action (Green Zone after Amber): Continue Support & Increase Top-ups", content: `<p class="font-semibold mb-2">Increased vigilance and feeding support:</p><ul class="list-disc pl-5 space-y-2 text-gray-700"><li>If subsequent prefeed glucose values have improved to lie in the green zone but still remain <2.6 mmol/l, <strong>increase top up volumes by one further increment of 5-10 ml/kg/feed.</strong></li><li>Offer an additional feed if willing and continue frequent feeds at least 3-hourly thereafter.</li><li>Observe a breastfeed and ensure good attachment and effective feeding. Encourage skin contact and biological nurturing. Proactively encourage hand expressing.</li></ul>` },
+            preterm_amber_action: { isEndpoint: true, title: "Action (Amber Zone): BG 1.0 - 1.9 mmol/L", content: `<p class="font-semibold mb-2">Supplement and Paediatric review:</p><ul class="list-disc pl-5 space-y-2 text-gray-700"><li>Inform Paediatrician.</li><li>Feed volumes must be increased, initially by an extra 10ml/kg/feed above current intake.</li><li>For breastfed babies this will require top-ups (EBM if available, otherwise formula or Donor Breast Milk).</li><li>Measure Glucose 1hr post feed. If >2.5mmol/l, continue supplements and resume pre-feed testing.</li><li>If subsequent pre-feed glucose values improve to the green zone but remain <2.6 mmol/l, increase top-up volumes by one further increment of 5-10 ml/kg/feed.</li><li>If baby will not take, or does not tolerate, supplements then admit to SCBU/TC for NG feeds.</li><li>Two consecutive measurements in the Amber Zone --→ Treat as Red Pathway.</li></ul>` },
+            preterm_red_action: { isEndpoint: true, title: "Action (Red Zone): BG < 1.0 mmol/L", content: `<p class="font-semibold mb-2">Admit to SCBU:</p><ul class="list-disc pl-5 space-y-2 text-gray-700"><li>Notify Paediatrician immediately for all babies who are symptomatic or whose blood Glucose is <1.0mmol/l.</li><li>Admit to SCBU and check TBG on the blood gas machine.</li><li>Give <strong>2ml/kg of 10% Dextrose</strong> bolus.</li><li>Commence IV infusion of 10% Dextrose. Use the <strong>GIR Calculator</strong> to aim for 6-8 mg/kg/min.</li></ul>` },
+            persistent_start: { question: "Persistent or Refractory Hypoglycaemia", details: `<p class="mb-2 text-gray-700">For the purpose of this guideline, persistent hypoglycaemia is defined as being present if the patient meets one of the following criteria:</p><ul class="list-disc pl-6 text-gray-600 space-y-2"><li>Remains hypoglycaemic for <strong>>3 days</strong> despite treatment, as detailed in the WoS Guidelines ‘Hypoglycaemia: term infants’ and 'Hypoglycaemia preterm infants'.</li><li>The neonate is requiring high infusion rates of dextrose (<strong>>8mg/kg/minute</strong>) to maintain normoglycaemia.</li></ul>`, answers: [ { text: "Patient meets criteria, begin escalation of therapy", next: "persistent_escalation_1" } ] },
+            persistent_escalation_1: { title: "Escalation of Therapy: Step 1", isEndpoint: true, content: `<ul class="list-disc pl-5 space-y-2 text-gray-700"><li>Admit to ITU.</li><li>Consider central access (UVC or long line).</li><li>Discontinue enteral feeds.</li><li>Increase glucose to <strong>10mg/kg/min</strong> using 12.5-15% glucose or TPN to minimise fluid intake.</li></ul>`, actions: [ { text: "Escalate Therapy", next: "persistent_escalation_2" }, { text: "De-escalate Therapy", next: "persistent_deescalation_2" } ] },
+            persistent_escalation_2: { title: "Escalation of Therapy: Step 2", isEndpoint: true, content: `<ul class="list-disc pl-5 space-y-2 text-gray-700"><li>Start a <strong>glucagon infusion</strong>.</li><li>Increase glucose to <strong>12mg/kg/min</strong> using 12.5-15% glucose/TPN to limit fluids to 130ml/kg/day.</li><li>Consider discussion with <strong>Endocrinology</strong>.</li></ul>`, actions: [ { text: "Escalate Therapy", next: "persistent_escalation_3" }, { text: "De-escalate Therapy", next: "persistent_deescalation_1" } ] },
+            persistent_escalation_3: { title: "Escalation of Therapy: Final Step", isEndpoint: true, content: `<p class="text-2xl font-bold text-red-600 text-center p-4">DISCUSS WITH ENDOCRINE SERVICE AND ORGANISE TRANSFER FOR SPECIALIST MANAGEMENT</p><p class="mt-4 font-semibold text-gray-700">They may advise to:</p><ul class="list-disc pl-5 space-y-2 text-gray-700"><li>Add diazoxide and chlorthiazide.</li><li>Consider adding carbohydrates to feeds.</li></ul>` },
+            persistent_deescalation_1: { title: "De-escalation of Therapy: Step 1 (from Glucagon)", isEndpoint: true, content: `<ul class="list-disc pl-5 space-y-2 text-gray-700"><li>Once glucose levels are stable and <strong>>3.5mmol/L</strong>, try to withdraw the glucagon infusion before reducing IV glucose intake.</li><li>Consider a pre-discharge fasting test for these infants.</li></ul>`, actions: [ { text: "De-escalate Further", next: "persistent_deescalation_2" } ] },
+            persistent_deescalation_2: { title: "De-escalation of Therapy: Step 2 (Wean IV Glucose)", isEndpoint: true, content: `<ul class="list-disc pl-5 space-y-2 text-gray-700"><li>Start to reduce the IV glucose intake, either by reducing the concentration of IV glucose or by starting small volumes of enteral feeds.</li><li>Monitor glucose after each change.</li></ul>`, actions: [ { text: "De-escalate Further", next: "persistent_deescalation_3" } ] },
+            persistent_deescalation_3: { title: "De-escalation of Therapy: Step 3 (Establish Full Feeds)", isEndpoint: true, content: `<ul class="list-disc pl-5 space-y-2 text-gray-700"><li>Continue to reduce IV glucose delivery in decrements of <strong>2mg/kg/min</strong> by replacing with equivalent milk.</li><li>Once fully milk feeding is established, increase feed intervals to 2-hourly, then 3-4 hourly feeds.</li><li>Arrange a pre-discharge fasting test if indicated.</li></ul>` }
+        });
+
+        function goBack() {
+            if (navigationHistory.length > 1) {
+                navigationHistory.pop(); // Remove current step
+                const previousStepId = navigationHistory[navigationHistory.length - 1]; // Get the new last step
+                renderStep(previousStepId, false); // Render it without adding to history again
+            }
+        }
+
+        function processTermPathway() {
+            const bgInput = document.getElementById('bg_value');
+            const bg = parseFloat(bgInput.value);
+            const isSymptomatic = document.getElementById('symptom_check').checked;
+            if (isNaN(bg)) { alert('Please enter a valid blood glucose value.'); return; }
+            if (isSymptomatic || bg < 1.0) { renderStep('term_flowchart_C'); } 
+            else if (bg >= 1.0 && bg <= 1.9) { renderStep('term_flowchart_B'); } 
+            else if (bg >= 2.0 && bg <= 2.5) { renderStep('term_flowchart_A'); } 
+            else { renderStep('term_stable_bg'); }
+        }
+        
+        function processTermAmberPathway() {
+            const bgInput = document.getElementById('bg_value');
+            const bg = parseFloat(bgInput.value);
+            if (isNaN(bg)) { alert('Please enter a valid blood glucose value.'); return; }
+            if (bg < 1.0) { renderStep('term_flowchart_C'); }
+            else if (bg >= 1.0 && bg <= 1.9) { renderStep('term_amber_ask_second_dose'); }
+            else { renderStep('term_amber_stable'); }
+        }
+
+        function processPretermPathway() {
+            const bgInput = document.getElementById('bg_value');
+            const bg = parseFloat(bgInput.value);
+            if (isNaN(bg)) { alert('Please enter a valid blood glucose value.'); return; }
+            if (bg < 1.0) { renderStep('preterm_red_action'); } 
+            else if (bg >= 1.0 && bg <= 1.9) { renderStep('preterm_ask_consecutive_amber'); } 
+            else if (bg >= 2.0 && bg <= 2.5) { renderStep('preterm_green_context_query'); } 
+            else { renderStep('preterm_normal_action'); }
+        }
+
+        function renderStep(stepId, addToHistory = true) {
+            if (stepId === 'start') { navigationHistory = []; }
+            const step = flowchart[stepId];
+            if (!step) return;
+
+            if (addToHistory) { if (navigationHistory[navigationHistory.length - 1] !== stepId) { navigationHistory.push(stepId); } }
+            
+            let backButtonHTML = '';
+            if (navigationHistory.length > 1) { backButtonHTML = `<button onclick="goBack()" class="w-full sm:w-auto p-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">Back</button>`; }
+
+            let contentHTML = '';
+
+            if (stepId === 'term_get_bg_and_symptoms') {
+                contentHTML = `
+                    <h2 class="text-xl font-semibold text-gray-800 mb-2">${step.question}</h2>
+                    <div class="mt-4 p-4 bg-gray-50 rounded-lg text-gray-600">${step.details}</div>
+                    <div class="mt-6 space-y-4">
+                        <div><label for="bg_value" class="block text-sm font-medium text-gray-700">Blood Glucose (mmol/L)</label><input type="number" id="bg_value" step="0.1" class="form-input mt-1 block w-full rounded-lg border-gray-300 shadow-sm" placeholder="e.g., 2.1"></div>
+                        <div class="relative flex items-start"><div class="flex h-5 items-center"><input id="symptom_check" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"></div><div class="ml-3 text-sm"><label for="symptom_check" class="font-medium text-gray-700">Are there any abnormal clinical signs?</label></div></div>
+                    </div>
+                    <div class="mt-6 flex flex-col sm:flex-row-reverse gap-3">
+                        <button onclick="processTermPathway()" class="w-full sm:w-auto p-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">Determine Pathway</button>
+                        ${backButtonHTML}
+                    </div>`;
+            } else if (stepId === 'term_amber_post_gel_input') {
+                contentHTML = `
+                    <h2 class="text-xl font-semibold text-gray-800 mb-2">${step.question}</h2>
+                    <div class="mt-4 p-4 bg-gray-50 rounded-lg text-gray-600">${step.details}</div>
+                    <div class="mt-6 space-y-4">
+                        <div><label for="bg_value" class="block text-sm font-medium text-gray-700">Blood Glucose (mmol/L)</label><input type="number" id="bg_value" step="0.1" class="form-input mt-1 block w-full rounded-lg border-gray-300 shadow-sm" placeholder="e.g., 1.5"></div>
+                    </div>
+                    <div class="mt-6 flex flex-col sm:flex-row-reverse gap-3">
+                        <button onclick="processTermAmberPathway()" class="w-full sm:w-auto p-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">Continue</button>
+                        ${backButtonHTML}
+                    </div>`;
+            } else if (stepId === 'preterm_get_bg') {
+                 contentHTML = `
+                    <h2 class="text-xl font-semibold text-gray-800 mb-2">${step.question}</h2>
+                    <div class="mt-4 p-4 bg-gray-50 rounded-lg text-gray-600">${step.details}</div>
+                    <div class="mt-6 space-y-4">
+                        <div><label for="bg_value" class="block text-sm font-medium text-gray-700">Blood Glucose (mmol/L)</label><input type="number" id="bg_value" step="0.1" class="form-input mt-1 block w-full rounded-lg border-gray-300 shadow-sm" placeholder="e.g., 2.1"></div>
+                    </div>
+                    <div class="mt-6 flex flex-col sm:flex-row-reverse gap-3">
+                        <button onclick="processPretermPathway()" class="w-full sm:w-auto p-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">Determine Pathway</button>
+                        ${backButtonHTML}
+                    </div>`;
+            } else if (step.isEndpoint) {
+                let actionsHTML = '';
+                if(step.actions) {
+                    actionsHTML = step.actions.map(action => `<button onclick="renderStep('${action.next}')" class="w-full sm:w-auto p-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">${action.text}</button>`).join('');
+                }
+                contentHTML = `
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">${step.title}</h2>
+                    <div class="prose prose-blue max-w-none">${step.content}</div>
+                    <div class="mt-8 flex flex-col sm:flex-row-reverse gap-3">
+                        ${actionsHTML}
+                        <button onclick="renderStep('start')" class="w-full sm:w-auto p-3 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-700">Start Over</button>
+                        ${backButtonHTML}
+                    </div>`;
+            } else {
+                const answersHTML = step.answers.map(answer => `<button onclick="renderStep('${answer.next}')" class="w-full text-left p-4 bg-blue-50 border-l-4 border-blue-500 text-blue-800 rounded-r-lg hover:bg-blue-100 transition-colors">${answer.text}</button>`).join('');
+                const detailsHTML = step.details ? `<div class="mt-4 p-4 bg-gray-50 rounded-lg text-gray-600">${step.details}</div>` : '';
+                const backButtonContainer = navigationHistory.length > 1 ? `<div class="mt-6">${backButtonHTML}</div>` : '';
+                contentHTML = `<h2 class="text-xl font-semibold text-gray-800 mb-2">${step.question}</h2>${detailsHTML}<div class="mt-6 space-y-3">${answersHTML}</div>${backButtonContainer}`;
+            }
+            flowchartContainer.innerHTML = contentHTML;
+        }
+        
+        const investigationsData = [
+            { inv: 'Blood - Glucose', how: 'DURING HYPOGLYCAEMIA. Fluoride/oxalate (grey top) bottle', where: 'Send to biochemistry', guide: '<4 days of age abnormal if <2.2mmol/L. >4 days of age abnormal if <2.6mmol/L' },
+            { inv: 'Blood - Capillary blood gas', how: 'Take in capillary tube', where: 'Blood gas machine', guide: 'Metabolic acidosis in severe ketosis, lactic acidosis or organic acidaemia' },
+            { inv: 'Blood - β-hydroxybutryate and free fatty acids', how: 'DURING HYPOGLYCAEMIA. Lithium heparin bottle. Sample should be transported to the local laboratory & separated within 30 mins of collection. Store frozen.', where: 'Send to biochemistry', guide: 'Hyperinsulinism: FFA<1.0mmol/l and FFA:β-hydroxybutyrate ratio <1.0. Fatty acid oxidation defect: FFA>1.0mmol/l and FFA: β-hydroxybutyrate ratio >1.4' },
+            { inv: 'Blood - Insulin and C-peptide', how: 'DURING HYPOGLYCAEMIA. Lithium heparin sample. Samples must be collected on ice, transported to the local laboratory and separated within 30 mins of collection. Store frozen.', where: 'Send to biochemistry', guide: 'Insulin >2.0mU/l when hypoglycaemia present consistent with hyperinsulinism or insulinoma. Increased insulin with low C-peptide suggests exogenous insulin administration' },
+            { inv: 'Urine - Ketones', how: 'Urinalysis', where: 'On ward', guide: 'Evidence of ketonuria' },
+            { inv: 'Blood - Lactate', how: 'DURING HYPOGLYCAEMIA. Fluoride/oxalate (grey top) bottle or blood gas tube.', where: 'Send to biochemistry or analyse on blood gas machine', guide: 'Ref range neonate 0.5-3mmol/l. Causes of high lactate: Venous stasis on sampling, Tissue hypoxia and ischaemia, Disorders of gluconeogenesis, Glycogen storage disease type I, Primary lactic acidosis (resp chain defects, pyruvate dehydrogenase deficiency)' },
+            { inv: 'Blood - Cortisol', how: 'DURING HYPOGLYCAEMIA. Lithium heparin sample.', where: 'Send to biochemistry', guide: 'Cortisol >250nmol/l excludes disorder of hypothalamic-pituitary axis. Cortisol 150-250nmol/l check GH level (if >6 ug/l significant pituitary pathology unlikely). Cortisol <150nmol/l +/- GH <6 ug/l needs further investigation for pituitary/adrenal disorders' },
+            { inv: 'Blood - Growth Hormone', how: 'Lithium heparin sample', where: 'Send to biochemistry', guide: 'GH level >10µg/L excludes hypopituitarism in infant <3 months of age. (Note units: 1µg/L=3mU/L)' },
+            { inv: 'Blood - Ammonia', how: 'Lithium heparin sample. Sample should be transported to Yorkhill ASAP. Laboratory MUST be informed.', where: 'Send to biochemistry', guide: '<100umol/L in term infants normal. <180umol/L in preterm/SGA infants. Raised in: Fat oxidation disorders, Reyes syndrome, Organic acidaemia (associated with hypoglycaemia and acidosis)' },
+            { inv: 'Blood - Urea and electrolytes', how: 'Lithium heparin sample', where: 'Send to biochemistry', guide: 'Looking for evidence of: Severe dehydration, Low K in organic acidaemia, Renal disease, Low Na +/- high K in adrenal disease' },
+            { inv: 'Blood - AST/ALT, CK', how: 'Lithium heparin sample', where: 'Send to biochemistry', guide: 'Deranged in GSD type I, Reye’s syndrome, fat oxidation defects and GSD type III' },
+            { inv: 'Blood - Thyroid function tests', how: 'Lithium heparin sample', where: 'Send to biochemistry', guide: 'Low free T4 and TSH in hypopituitarism' },
+            { inv: 'Blood - Testosterone', how: 'ONLY IN MALES <4 MONTHS. Lithium heparin bottle.', where: 'Send to biochemistry', guide: 'Absent normal postnatal surge of testosterone in panhypopituitarism' },
+            { inv: 'Blood - Amino acids', how: 'DURING HYPOGLYCAEMIA. Lithium heparin bottle. Sample should be separated by local laboratory within 2hr of collection and frozen.', where: 'Send to biochemistry', guide: 'Low alanine in ketotic hypoglycaemia and starvation. High alanine in lactic acidosis' },
+            { inv: 'Blood - ACTH', how: 'Only if cortisol response equivocal/low. Lithium heparin bottle. Samples must be transported to local laboratory within 30 mins of collection. Store frozen.', where: 'Send to biochemistry', guide: 'Ref range 7-51ng/L. Normal/low ACTH excludes adrenal pathology. High ACTH with low cortisol suggests adrenal pathology and requires Synacthen test' },
+            { inv: 'Blood - Acyl-carnitine', how: 'DURING HYPOGLYCAEMIA. Blood spots on card.', where: 'Send to biochemistry', guide: 'May show abnormalities in MCAD deficiency and long chain fatty acid oxidation disorders' },
+            { inv: 'Urine - Organic acids', how: 'First urine sample passed following hypoglycaemia episode. Freeze.', where: 'Send to biochemistry', guide: 'Evidence of abnormalities in organic acid disorders, fatty acid oxidation defects. Ketosis excludes endogenous hyperinsulinism.' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Populate Investigations table
+            const tableBody = document.querySelector('#investigations-modal tbody');
+            tableBody.innerHTML = investigationsData.map(row => `
+                <tr class="divide-x divide-gray-200">
+                    <td class="px-3 py-2 align-top"><strong>${row.inv.split(' - ')[0]}</strong> - ${row.inv.split(' - ')[1]}</td>
+                    <td class="px-3 py-2 align-top">${row.how.replace(/DURING HYPOGLYCAEMIA/g, '<strong>DURING HYPOGLYCAEMIA</strong>')}</td>
+                    <td class="px-3 py-2 align-top">${row.where}</td>
+                    <td class="px-3 py-2 align-top">${row.guide.replace(/<|>/g, (match) => `<strong>${match}</strong>`).replace(/\n/g, '<br>')}</td>
+                </tr>
+            `).join('');
+
+            // Populate GIR calculator
+            document.getElementById('gir-calculator-content').innerHTML = `
+                <div class="space-y-8">
+                    <div><h3 class="text-xl font-semibold text-gray-800 mb-4">1. Infant Details</h3><div class="grid grid-cols-1 gap-4"><div><label for="gir-weight" class="block text-sm font-medium text-gray-700 mb-1">Infant's Weight (kg)</label><input type="number" id="gir-weight" step="0.01" placeholder="e.g., 3.5" class="form-input block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></div></div></div>
+                    <div><h3 class="text-xl font-semibold text-gray-800 mb-4">2. IV Infusions</h3><div class="space-y-6"><div class="p-4 border border-gray-200 rounded-lg bg-white"><h4 class="font-semibold text-gray-700 mb-3">Infusion 1</h4><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label for="gir-dextrose1" class="block text-sm font-medium text-gray-700 mb-1">Dextrose (%)</label><input type="number" id="gir-dextrose1" placeholder="e.g., 10" class="form-input block w-full rounded-lg border-gray-300 shadow-sm"></div><div><label for="gir-flowrate1" class="block text-sm font-medium text-gray-700 mb-1">Flow Rate (ml/hr)</label><input type="number" id="gir-flowrate1" step="0.1" placeholder="e.g., 5.8" class="form-input block w-full rounded-lg border-gray-300 shadow-sm"></div></div></div><div class="p-4 border border-gray-200 rounded-lg bg-white"><h4 class="font-semibold text-gray-700 mb-3">Infusion 2 <span class="text-xs font-normal text-gray-500">(Optional)</span></h4><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label for="gir-dextrose2" class="block text-sm font-medium text-gray-700 mb-1">Dextrose (%)</label><input type="number" id="gir-dextrose2" placeholder="Leave blank if none" class="form-input block w-full rounded-lg border-gray-300 shadow-sm"></div><div><label for="gir-flowrate2" class="block text-sm font-medium text-gray-700 mb-1">Flow Rate (ml/hr)</label><input type="number" id="gir-flowrate2" step="0.1" placeholder="Leave blank if none" class="form-input block w-full rounded-lg border-gray-300 shadow-sm"></div></div></div></div></div>
+                    <div><h3 class="text-xl font-semibold text-gray-800 mb-4">3. Enteral Feeds</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label for="gir-milkType" class="block text-sm font-medium text-gray-700 mb-1">Type of Milk</label><select id="gir-milkType" class="form-select block w-full rounded-lg border-gray-300 shadow-sm"><option value="none">No Milk Feed</option><option value="breast">Breast Milk</option><option value="term">Term Formula</option><option value="preterm">Pre-term Formula</option></select></div><div><label for="gir-milkVolume" class="block text-sm font-medium text-gray-700 mb-1">Hourly Milk Volume (ml/hr)</label><input type="number" id="gir-milkVolume" step="0.1" placeholder="e.g., 20" class="form-input block w-full rounded-lg border-gray-300 shadow-sm"></div><div class="sm:col-span-2"><label for="gir-addedCarbs" class="block text-sm font-medium text-gray-700 mb-1">Added Carbohydrate (g/100ml)</label><input type="number" id="gir-addedCarbs" step="0.1" placeholder="Leave blank if none" class="form-input block w-full rounded-lg border-gray-300 shadow-sm"></div></div></div>
+                    <div class="mt-8"><button onclick="calculateGIR()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Calculate</button></div>
+                    <div id="gir-result" class="mt-8"></div>
+                    <div class="mt-8 pt-4 border-t border-gray-200">
+                        <h4 class="font-semibold text-gray-700 mb-2">GIR Calculation Formula</h4>
+                        <div class="text-sm text-gray-600 bg-gray-100 p-3 rounded-lg text-center">
+                            <code>GIR (mg/kg/min) = [Total Glucose (mg/hr)] &div; [Weight (kg) &times; 60]</code>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">
+                            Note: Total Glucose (mg/hr) is the sum from all sources. For IV fluids, Glucose (mg/hr) = Dextrose % &times; Flow Rate (ml/hr) &times; 10.
+                        </p>
+                    </div>
+                </div>`;
+            renderStep('start');
+        });
+        
+        function calculateGIR() {
+            const weight = parseFloat(document.getElementById('gir-weight').value);
+            const dextrose1 = parseFloat(document.getElementById('gir-dextrose1').value) || 0;
+            const flowrate1 = parseFloat(document.getElementById('gir-flowrate1').value) || 0;
+            const dextrose2 = parseFloat(document.getElementById('gir-dextrose2').value) || 0;
+            const flowrate2 = parseFloat(document.getElementById('gir-flowrate2').value) || 0;
+            const milkType = document.getElementById('gir-milkType').value;
+            const milkVolume = parseFloat(document.getElementById('gir-milkVolume').value) || 0;
+            const addedCarbs = parseFloat(document.getElementById('gir-addedCarbs').value) || 0;
+            const resultDiv = document.getElementById('gir-result');
+            if (isNaN(weight) || weight <= 0) { resultDiv.innerHTML = `<div class="p-4 rounded-lg bg-red-100 border border-red-300"><p class="font-semibold text-red-800">Error: Please enter a valid weight.</p></div>`; return; }
+            const glucoseFromIV1 = dextrose1 * flowrate1 * 10;
+            const glucoseFromIV2 = dextrose2 * flowrate2 * 10;
+            const milkSugar = milkType !== 'none' ? milkSugarContent[milkType] : 0;
+            const glucoseFromMilk = milkSugar * milkVolume * 10;
+            const glucoseFromAddedCarbs = addedCarbs * milkVolume * 10;
+            const totalGlucose_mg_per_hr = glucoseFromIV1 + glucoseFromIV2 + glucoseFromMilk + glucoseFromAddedCarbs;
+            const gir = totalGlucose_mg_per_hr / (weight * 60);
+            let resultClasses = gir >= 10 ? 'bg-red-100 border-red-300 text-red-900' : 'bg-green-100 border-green-300 text-green-900';
+            let alertMessage = gir >= 10 ? `<p class="text-sm mt-2">This rate is <strong>≥10 mg/kg/min</strong>. Consider investigation for hyperinsulinism.</p>` : '';
+            const breakdownHTML = `<div class="mt-6 p-4 border border-gray-200 rounded-lg bg-white"><h3 class="font-semibold text-lg mb-3 text-gray-800">Calculation Breakdown</h3><div class="space-y-2 text-sm text-gray-700"><p><strong>Glucose from IV 1:</strong> ${glucoseFromIV1.toFixed(2)} mg/hr <em class="text-gray-500 text-xs ml-2">(${dextrose1}% &times; ${flowrate1} ml/hr &times; 10)</em></p><p><strong>Glucose from IV 2:</strong> ${glucoseFromIV2.toFixed(2)} mg/hr <em class="text-gray-500 text-xs ml-2">(${dextrose2}% &times; ${flowrate2} ml/hr &times; 10)</em></p><p><strong>Glucose from Milk:</strong> ${glucoseFromMilk.toFixed(2)} mg/hr <em class="text-gray-500 text-xs ml-2">(${milkSugar} g/100ml &times; ${milkVolume} ml/hr &times; 10)</em></p><p><strong>Glucose from Added Carbs:</strong> ${glucoseFromAddedCarbs.toFixed(2)} mg/hr <em class="text-gray-500 text-xs ml-2">(${addedCarbs} g/100ml &times; ${milkVolume} ml/hr &times; 10)</em></p><hr class="my-2 border-gray-300"><p class="font-semibold"><strong>Total Glucose:</strong> ${totalGlucose_mg_per_hr.toFixed(2)} mg/hr</p><hr class="my-2 border-gray-300"><p class="font-semibold"><strong>Final GIR Calculation:</strong></p><p class="pl-4">(${totalGlucose_mg_per_hr.toFixed(2)} mg/hr) &div; (${weight} kg &times; 60 min/hr) = <strong class="text-base">${gir.toFixed(2)} mg/kg/min</strong></p></div></div>`;
+            resultDiv.innerHTML = `<div class="p-4 rounded-lg border ${resultClasses}"><p class="text-center text-lg">Total Glucose Infusion Rate:</p><p class="text-center text-3xl font-bold">${gir.toFixed(2)}</p><p class="text-center text-lg">mg/kg/min</p>${alertMessage}</div>${breakdownHTML}`;
+        }
+        function toggleModal(modalId, show) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            const modalContent = modal.querySelector('.modal-content');
+            if (show) {
+                modal.classList.remove('hidden');
+                setTimeout(() => { modal.classList.add('opacity-100'); modalContent.classList.add('scale-100'); modalContent.classList.remove('scale-95'); }, 10);
+            } else {
+                modal.classList.remove('opacity-100');
+                modalContent.classList.remove('scale-100');
+                modalContent.classList.add('scale-95');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
+        function handleOverlayClick(event) { if (event.target.classList.contains('modal')) { toggleModal(event.target.id, false); } }
+    </script>
+
+</body>
+</html>
