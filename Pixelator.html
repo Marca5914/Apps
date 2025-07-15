@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Pixelator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style for the selection rectangle */
+        #sourceCanvas {
+            cursor: crosshair;
+            touch-action: none; /* Prevents default touch actions like scrolling */
+        }
+        .dashed-border {
+            border: 2px dashed #a5b4fc;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-6xl bg-white rounded-2xl shadow-lg p-6 md:p-8">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Image Pixelator</h1>
+            <p class="text-gray-600 mt-2">Upload an image, select an area, and turn it into pixel art.</p>
+        </div>
+
+        <!-- Main Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <!-- Controls Column -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-gray-50 p-5 rounded-xl border border-gray-200">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">1. Upload Image</h2>
+                    <label for="imageLoader" class="w-full cursor-pointer bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors duration-300 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                        Choose a File
+                    </label>
+                    <input type="file" id="imageLoader" name="imageLoader" class="hidden" accept="image/*"/>
+                    <p id="fileName" class="text-sm text-gray-500 mt-3 text-center truncate"></p>
+                </div>
+
+                <div id="controls-panel" class="bg-gray-50 p-5 rounded-xl border border-gray-200 space-y-4 hidden">
+                    <div>
+                        <h2 class="text-xl font-semibold mb-2 text-gray-800">2. Select Area</h2>
+                        <p class="text-sm text-gray-600">Click/tap and drag a square on your image to select the region.</p>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold mb-3 text-gray-800">3. Pixelate</h2>
+                         <label for="pixelSize" class="block text-sm font-medium text-gray-700 mb-1">Pixelation Size:</label>
+                        <select id="pixelSize" class="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="8">8x8 Pixels</option>
+                            <option value="16">16x16 Pixels</option>
+                            <option value="32">32x32 Pixels</option>
+                            <option value="64" selected>64x64 Pixels</option>
+                            <option value="128">128x128 Pixels</option>
+                        </select>
+                        <button id="pixelateBtn" class="w-full mt-4 bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-300">
+                            Pixelate Selection
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Canvas Column -->
+            <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <!-- Source Image Canvas -->
+                <div id="sourceContainer" class="w-full aspect-square bg-gray-100 rounded-lg flex items-center justify-center dashed-border hidden">
+                     <canvas id="sourceCanvas" class="max-w-full max-h-full rounded-md"></canvas>
+                </div>
+                <p id="sourcePlaceholder" class="w-full aspect-square bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 dashed-border">
+                    Your image will appear here
+                </p>
+
+                <!-- Output Pixelated Canvas -->
+                <div id="outputContainer" class="w-full aspect-square bg-gray-100 rounded-lg flex items-center justify-center dashed-border hidden">
+                    <canvas id="outputCanvas" class="max-w-full max-h-full rounded-md"></canvas>
+                </div>
+                 <p id="outputPlaceholder" class="w-full aspect-square bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 dashed-border">
+                    Pixelated result will appear here
+                </p>
+            </div>
+            
+            <!-- Download Button (shown after pixelation) -->
+            <div id="download-section" class="lg:col-span-12 text-center mt-4 hidden">
+                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <div class="w-full sm:w-auto">
+                        <label for="fileType" class="sr-only">File Type</label>
+                        <select id="fileType" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                            <option value="png" selected>Download as PNG</option>
+                            <option value="jpg">Download as JPG</option>
+                        </select>
+                    </div>
+                    <button id="downloadBtn" class="w-full sm:w-auto bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition-colors duration-300 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        Download
+                    </button>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Element References
+        const imageLoader = document.getElementById('imageLoader');
+        const fileNameEl = document.getElementById('fileName');
+        const sourceCanvas = document.getElementById('sourceCanvas');
+        const sourceCtx = sourceCanvas.getContext('2d');
+        const outputCanvas = document.getElementById('outputCanvas');
+        const outputCtx = outputCanvas.getContext('2d');
+        const pixelateBtn = document.getElementById('pixelateBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const pixelSizeSelect = document.getElementById('pixelSize');
+        const fileTypeSelect = document.getElementById('fileType');
+
+        // Placeholders and Containers
+        const sourceContainer = document.getElementById('sourceContainer');
+        const outputContainer = document.getElementById('outputContainer');
+        const sourcePlaceholder = document.getElementById('sourcePlaceholder');
+        const outputPlaceholder = document.getElementById('outputPlaceholder');
+        const controlsPanel = document.getElementById('controls-panel');
+        const downloadSection = document.getElementById('download-section');
+
+        // State variables
+        let image = new Image();
+        let isDragging = false;
+        let selection = { startX: 0, startY: 0, width: 0, height: 0 };
+        let hasSelection = false;
+
+        /**
+         * Handles the file input change event.
+         * Reads the selected file and loads it into the Image object.
+         */
+        imageLoader.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            fileNameEl.textContent = file.name;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                image.onload = () => {
+                    // Show relevant UI elements
+                    sourcePlaceholder.classList.add('hidden');
+                    sourceContainer.classList.remove('hidden');
+                    controlsPanel.classList.remove('hidden');
+                    resetState();
+                    drawImageToCanvas();
+                };
+                image.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        /**
+         * Resets the application state when a new image is loaded.
+         */
+        function resetState() {
+            outputPlaceholder.classList.remove('hidden');
+            outputContainer.classList.add('hidden');
+            downloadSection.classList.add('hidden');
+            pixelateBtn.disabled = true;
+            hasSelection = false;
+            selection = { startX: 0, startY: 0, width: 0, height: 0 };
+            outputCtx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+        }
+
+        /**
+         * Draws the loaded image onto the source canvas, scaling it to fit.
+         */
+        function drawImageToCanvas() {
+            const container = sourceContainer;
+            const maxWidth = container.clientWidth;
+            const maxHeight = container.clientHeight;
+            
+            let newWidth, newHeight;
+            const ratio = image.width / image.height;
+
+            if (image.width > image.height) {
+                newWidth = maxWidth;
+                newHeight = newWidth / ratio;
+            } else {
+                newHeight = maxHeight;
+                newWidth = newHeight * ratio;
+            }
+            
+            if (newHeight > maxHeight) {
+                newHeight = maxHeight;
+                newWidth = newHeight * ratio;
+            }
+             if (newWidth > maxWidth) {
+                newWidth = maxWidth;
+                newHeight = newWidth / ratio;
+            }
+
+            sourceCanvas.width = newWidth;
+            sourceCanvas.height = newHeight;
+            
+            redrawSourceCanvas();
+        }
+
+        /**
+         * Redraws the source canvas with the image and the selection rectangle.
+         */
+        function redrawSourceCanvas() {
+            sourceCtx.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
+            sourceCtx.drawImage(image, 0, 0, sourceCanvas.width, sourceCanvas.height);
+
+            if (isDragging || hasSelection) {
+                sourceCtx.strokeStyle = 'rgba(79, 70, 229, 0.8)'; // Indigo color
+                sourceCtx.lineWidth = 2;
+                sourceCtx.setLineDash([5, 5]);
+                sourceCtx.strokeRect(selection.startX, selection.startY, selection.width, selection.height);
+                sourceCtx.setLineDash([]);
+            }
+        }
+        
+        /**
+         * Gets the event position (for both mouse and touch) relative to the canvas.
+         * @param {MouseEvent|TouchEvent} evt - The event.
+         * @returns {{x: number, y: number}} The coordinates.
+         */
+        function getEventPosition(evt) {
+            const rect = sourceCanvas.getBoundingClientRect();
+            const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+            const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        // --- Event Handlers for Selection (Mouse and Touch) ---
+
+        function handleDragStart(e) {
+            e.preventDefault(); // Prevents scrolling/unwanted browser actions on touch
+            if (!image.src) return;
+            const pos = getEventPosition(e);
+            selection.startX = pos.x;
+            selection.startY = pos.y;
+            selection.width = 0;
+            selection.height = 0;
+            isDragging = true;
+            hasSelection = false;
+            pixelateBtn.disabled = true;
+        }
+
+        function handleDragMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const pos = getEventPosition(e);
+            
+            const deltaX = pos.x - selection.startX;
+            const deltaY = pos.y - selection.startY;
+            
+            const absDeltaX = Math.abs(deltaX);
+            const absDeltaY = Math.abs(deltaY);
+
+            if (absDeltaX > absDeltaY) {
+                selection.width = deltaX;
+                selection.height = absDeltaX * (Math.sign(deltaY) || Math.sign(deltaX));
+            } else {
+                selection.height = deltaY;
+                selection.width = absDeltaY * (Math.sign(deltaX) || Math.sign(deltaY));
+            }
+
+            redrawSourceCanvas();
+        }
+
+        function handleDragEnd() {
+            if (!isDragging) return;
+            isDragging = false;
+
+            if (selection.width < 0) {
+                selection.startX += selection.width;
+                selection.width *= -1;
+            }
+            if (selection.height < 0) {
+                selection.startY += selection.height;
+                selection.height *= -1;
+            }
+
+            if (selection.width > 5 && selection.height > 5) {
+                hasSelection = true;
+                pixelateBtn.disabled = false;
+            }
+            redrawSourceCanvas();
+        }
+        
+        // --- Event Listeners ---
+        sourceCanvas.addEventListener('mousedown', handleDragStart);
+        sourceCanvas.addEventListener('mousemove', handleDragMove);
+        window.addEventListener('mouseup', handleDragEnd);
+        sourceCanvas.addEventListener('touchstart', handleDragStart);
+        sourceCanvas.addEventListener('touchmove', handleDragMove);
+        window.addEventListener('touchend', handleDragEnd);
+
+        /**
+         * Handles the pixelation process.
+         */
+        pixelateBtn.addEventListener('click', () => {
+            if (!hasSelection) {
+                console.error("Pixelate button clicked without a valid selection.");
+                return;
+            }
+
+            const pixelSize = parseInt(pixelSizeSelect.value, 10);
+
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = pixelSize;
+            tempCanvas.height = pixelSize;
+
+            tempCtx.drawImage(
+                sourceCanvas,
+                selection.startX, selection.startY, selection.width, selection.height,
+                0, 0, pixelSize, pixelSize
+            );
+
+            outputPlaceholder.classList.add('hidden');
+            outputContainer.classList.remove('hidden');
+            downloadSection.classList.remove('hidden');
+            
+            const outputDim = outputContainer.clientWidth;
+            outputCanvas.width = outputDim;
+            outputCanvas.height = outputDim;
+
+            outputCtx.imageSmoothingEnabled = false;
+            outputCtx.mozImageSmoothingEnabled = false;
+            outputCtx.webkitImageSmoothingEnabled = false;
+            outputCtx.msImageSmoothingEnabled = false;
+
+            outputCtx.clearRect(0,0, outputCanvas.width, outputCanvas.height);
+            outputCtx.drawImage(tempCanvas, 0, 0, pixelSize, pixelSize, 0, 0, outputCanvas.width, outputCanvas.height);
+        });
+        
+        /**
+         * Handles downloading the pixelated image in the selected format.
+         */
+        downloadBtn.addEventListener('click', () => {
+            const fileType = fileTypeSelect.value; // 'png' or 'jpg'
+            const extension = fileType;
+            const mimeType = `image/${fileType === 'jpg' ? 'jpeg' : 'png'}`;
+            let dataUrl;
+
+            // JPGs don't support transparency, so we need to draw it on a white background first.
+            if (fileType === 'jpg') {
+                // Create a temporary canvas to draw the background
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = outputCanvas.width;
+                tempCanvas.height = outputCanvas.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                
+                // Fill with white background
+                tempCtx.fillStyle = '#FFFFFF';
+                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                
+                // Draw the pixelated image on top of the white background
+                tempCtx.drawImage(outputCanvas, 0, 0);
+                
+                // Get data URL from the temporary canvas with the background
+                dataUrl = tempCanvas.toDataURL(mimeType, 0.9); // 0.9 is quality for JPEG
+            } else {
+                // For PNG, just get the data URL directly as it supports transparency
+                dataUrl = outputCanvas.toDataURL(mimeType);
+            }
+
+            // Create a link and trigger the download
+            const link = document.createElement('a');
+            link.download = `pixel-art-${pixelSizeSelect.value}x${pixelSizeSelect.value}.${extension}`;
+            link.href = dataUrl;
+            link.click();
+        });
+        
+        // Redraw canvas on window resize to keep it responsive
+        window.addEventListener('resize', () => {
+            if (image.src) {
+                drawImageToCanvas();
+                if(hasSelection && !outputContainer.classList.contains('hidden')){
+                    pixelateBtn.click();
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
