@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAC/UVC Length Calculator</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style for the modal backdrop */
+        .modal-backdrop {
+            transition: opacity 0.3s ease;
+        }
+        /* Style for the modal panel */
+        .modal-panel {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-md mx-auto p-6 md:p-8">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-800">UAC/UVC Length Calculator</h1>
+                <p class="text-gray-500 mt-2">For Neonates</p>
+            </div>
+
+            <!-- Input Section -->
+            <div>
+                <label for="birthWeight" class="block text-sm font-medium text-gray-700 mb-2">Birth Weight (kg)</label>
+                <input type="number" id="birthWeight" name="birthWeight" step="0.01" placeholder="e.g., 2.5" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+            </div>
+
+            <!-- Calculate Button -->
+            <div class="mt-6">
+                <button id="calculateBtn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:-translate-y-0.5">
+                    Calculate
+                </button>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results" class="mt-8 hidden">
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Estimated Catheter Lengths:</h3>
+                    <p class="text-gray-700 text-lg"><strong class="font-semibold">UAC Length:</strong> <span id="uacResult" class="font-bold text-blue-600"></span> cm + stump</p>
+                    <p class="text-gray-700 text-lg mt-1"><strong class="font-semibold">UVC Length:</strong> <span id="uvcResult" class="font-bold text-blue-600"></span> cm + stump</p>
+                    <p class="text-xs text-gray-600 italic mt-3">Note: Measurements should include the length of the umbilical stump.</p>
+                </div>
+                 <p id="error-message" class="text-red-500 text-sm mt-2 text-center"></p>
+            </div>
+            
+            <!-- Information Section -->
+            <div class="text-center mt-8 border-t pt-6">
+                 <button id="showInfoBtn" class="w-full bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition duration-300">
+                    Show Confirmation Positions
+                </button>
+                <a href="https://perinatalnetwork.scot/wp-content/uploads/2023/10/Umbilical-Lines_WoS.pdf" target="_blank" rel="noopener noreferrer" class="block text-sm text-blue-600 hover:underline mt-4">
+                    View Full Guideline (WoS Neonates)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Info Modal -->
+    <div id="infoModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 modal-backdrop opacity-0 pointer-events-none">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-8 modal-panel transform scale-95">
+            <div class="flex justify-between items-start">
+                <h2 class="text-xl font-bold text-gray-800">Catheter Tip Confirmation</h2>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="mt-6 space-y-4 text-gray-600">
+                <div>
+                    <h3 class="font-semibold text-gray-900">Umbilical Venous Catheter (UVC)</h3>
+                    <p>The tip should pass through the ductus venosus and sit at the junction of the inferior vena cava (IVC) with the right atrium. This is ‘just below diaphragm on x-ray’ and corresponds to vertebral level <strong class="text-gray-800">T8-T9</strong>.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900">Umbilical Arterial Catheter (UAC)</h3>
+                    <p>The optimal position for the UAC tip is in the descending aorta. Two positions are acceptable:</p>
+                    <ul class="list-disc list-inside mt-2 space-y-2">
+                        <li>
+                            <strong>High Position (Preferred):</strong> Vertebral level <strong class="text-gray-800">T6-T10</strong>.
+                            <span class="block text-sm text-gray-500">‘Above the diaphragm’. This position is above the celiac, mesenteric, and renal arteries.</span>
+                        </li>
+                        <li>
+                            <strong>Low Position:</strong> Vertebral level <strong class="text-gray-800">L3-L5</strong>.
+                            <span class="block text-sm text-gray-500">‘Above aortic bifurcation’. This is below most vessel roots, though the inferior mesenteric artery may arise from L3-L4.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+             <div class="mt-8 text-right">
+                <button id="closeModalBtn2" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get references to all necessary DOM elements
+        const birthWeightInput = document.getElementById('birthWeight');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultsDiv = document.getElementById('results');
+        const uacResultSpan = document.getElementById('uacResult');
+        const uvcResultSpan = document.getElementById('uvcResult');
+        const errorMessageP = document.getElementById('error-message');
+
+        const showInfoBtn = document.getElementById('showInfoBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const closeModalBtn2 = document.getElementById('closeModalBtn2');
+        const infoModal = document.getElementById('infoModal');
+        const modalBackdrop = infoModal.querySelector('.modal-backdrop');
+        const modalPanel = infoModal.querySelector('.modal-panel');
+
+        /**
+         * Calculates UAC and UVC lengths and displays the results.
+         */
+        function calculateAndDisplay() {
+            // Clear previous error messages
+            errorMessageP.textContent = '';
+            
+            // Get the birth weight value as a floating-point number
+            const weight = parseFloat(birthWeightInput.value);
+
+            // Validate the input
+            if (isNaN(weight) || weight <= 0) {
+                errorMessageP.textContent = 'Please enter a valid, positive birth weight.';
+                resultsDiv.classList.add('hidden'); // Hide results if input is invalid
+                return;
+            }
+
+            // --- Calculation Formulas ---
+            // UVC: (1.5 * Birth Weight in kg) + 5 cm
+            const uvcLength = (1.5 * weight) + 5;
+            // UAC: (3 * Birth Weight in kg) + 9 cm
+            const uacLength = (3 * weight) + 9;
+
+            // Update the text content of the result spans
+            // toFixed(1) rounds the number to one decimal place
+            uacResultSpan.textContent = uacLength.toFixed(1);
+            uvcResultSpan.textContent = uvcLength.toFixed(1);
+
+            // Show the results section
+            resultsDiv.classList.remove('hidden');
+        }
+        
+        /**
+         * Opens the information modal with a smooth transition.
+         */
+        function openModal() {
+            infoModal.classList.remove('pointer-events-none');
+            infoModal.classList.remove('opacity-0');
+            modalPanel.classList.remove('scale-95');
+        }
+
+        /**
+         * Closes the information modal with a smooth transition.
+         */
+        function closeModal() {
+            infoModal.classList.add('opacity-0');
+            modalPanel.classList.add('scale-95');
+            // Wait for the transition to finish before hiding it completely
+            setTimeout(() => {
+                infoModal.classList.add('pointer-events-none');
+            }, 300); // Must match the transition duration
+        }
+
+
+        // --- Event Listeners ---
+        
+        // Listen for clicks on the "Calculate" button
+        calculateBtn.addEventListener('click', calculateAndDisplay);
+        
+        // Allow calculation by pressing "Enter" in the input field
+        birthWeightInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                calculateAndDisplay();
+            }
+        });
+
+        // Listen for clicks to open and close the modal
+        showInfoBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+        closeModalBtn2.addEventListener('click', closeModal);
+        
+        // Close modal if the user clicks on the backdrop
+        infoModal.addEventListener('click', (event) => {
+            if (event.target === infoModal) {
+                closeModal();
+            }
+        });
+
+    </script>
+</body>
+</html>
