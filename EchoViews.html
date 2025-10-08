@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neonatal Echo Quick Reference Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+        .main-content {
+            display: none;
+        }
+        .view-section {
+            display: none;
+        }
+        .view-section.active {
+            display: block;
+        }
+        .sidebar-link.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+        .checklist-item input:checked + label {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+        .checklist-item input:checked + label::before {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+            content: '✓';
+            color: white;
+            text-align: center;
+            line-height: 1.25rem;
+        }
+        .checklist-item label::before {
+            content: '';
+            display: inline-block;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid #d1d5db;
+            border-radius: 0.25rem;
+            margin-right: 0.75rem;
+            vertical-align: middle;
+            transition: all 0.2s;
+        }
+        .checklist-item label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .checklist-item input {
+            display: none;
+        }
+        .progress-bar {
+            background: conic-gradient(#4f46e5 var(--progress), #e5e7eb 0);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Home Screen -->
+    <div id="home-screen" class="min-h-screen flex flex-col items-center justify-center p-4">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900">Neonatal Echo Guide</h1>
+            <p class="text-lg text-gray-600 mt-2">A quick reference for functional & structural scans.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
+            <button data-scan-type="structural" class="scan-type-btn bg-white p-6 rounded-xl shadow-md hover:shadow-lg hover:bg-indigo-50 transition duration-300 ease-in-out transform hover:-translate-y-1">
+                <h2 class="text-2xl font-semibold text-indigo-600">Structural Scan</h2>
+                <p class="text-gray-500 mt-2">Key anatomical sweeps and views.</p>
+            </button>
+            <button data-scan-type="functional" class="scan-type-btn bg-white p-6 rounded-xl shadow-md hover:shadow-lg hover:bg-indigo-50 transition duration-300 ease-in-out transform hover:-translate-y-1">
+                <h2 class="text-2xl font-semibold text-indigo-600">Functional Scan</h2>
+                <p class="text-gray-500 mt-2">Assess cardiac function and hemodynamics.</p>
+            </button>
+            <button data-scan-type="pphn" class="scan-type-btn bg-white p-6 rounded-xl shadow-md hover:shadow-lg hover:bg-indigo-50 transition duration-300 ease-in-out transform hover:-translate-y-1">
+                <h2 class="text-2xl font-semibold text-indigo-600">PPHN Assessment</h2>
+                <p class="text-gray-500 mt-2">Evaluate for persistent pulmonary hypertension.</p>
+            </button>
+            <button data-scan-type="pda" class="scan-type-btn bg-white p-6 rounded-xl shadow-md hover:shadow-lg hover:bg-indigo-50 transition duration-300 ease-in-out transform hover:-translate-y-1">
+                <h2 class="text-2xl font-semibold text-indigo-600">PDA Assessment</h2>
+                <p class="text-gray-500 mt-2">Evaluate a patent ductus arteriosus.</p>
+            </button>
+            <button data-scan-type="comprehensive" class="scan-type-btn bg-white p-6 rounded-xl shadow-md hover:shadow-lg hover:bg-indigo-50 transition duration-300 ease-in-out transform hover:-translate-y-1 col-span-1 md:col-span-2 lg:col-span-1">
+                <h2 class="text-2xl font-semibold text-indigo-600">Comprehensive Scan</h2>
+                <p class="text-gray-500 mt-2">Full structural and functional protocol.</p>
+            </button>
+        </div>
+         <p class="text-xs text-gray-400 mt-8">Based on the Rotunda Neonatal Cardiac Research NPE Teaching Manual (2019).</p>
+    </div>
+
+    <!-- Main Content Area -->
+    <div id="main-content" class="main-content">
+        <div class="flex h-screen bg-gray-200">
+            <!-- Sidebar -->
+            <aside id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 flex flex-col">
+                <div class="p-4 border-b border-gray-700">
+                    <h2 id="scan-title" class="text-xl font-bold">Scan Protocol</h2>
+                </div>
+                <nav class="flex-grow overflow-y-auto">
+                    <a href="#" data-view="subcostal" class="sidebar-link block p-4 hover:bg-gray-700">Subcostal</a>
+                    <a href="#" data-view="parasternal-long" class="sidebar-link block p-4 hover:bg-gray-700">Parasternal Long</a>
+                    <a href="#" data-view="parasternal-short" class="sidebar-link block p-4 hover:bg-gray-700">Parasternal Short</a>
+                    <a href="#" data-view="apical" class="sidebar-link block p-4 hover:bg-gray-700">Apical</a>
+                    <a href="#" data-view="suprasternal" class="sidebar-link block p-4 hover:bg-gray-700">Suprasternal</a>
+                    <a href="#" data-view="high-parasternal" class="sidebar-link block p-4 hover:bg-gray-700">High Parasternal</a>
+                </nav>
+                <div class="p-4 border-t border-gray-700">
+                    <button id="back-to-home" class="w-full bg-indigo-600 text-white p-2 rounded-lg hover:bg-indigo-700 transition">Back to Home</button>
+                </div>
+            </aside>
+
+            <!-- Content -->
+            <main class="flex-1 p-6 overflow-y-auto">
+                <div id="view-content-area">
+                    <!-- Dynamic Content Goes Here -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- DATABASE of Checklist Items ---
+            const scanData = {
+                subcostal: {
+                    structural: ["Situs view & sweep in transverse plane (2D + color)", "Long-axis sweep (posterior to anterior) with color for connections", "Assess atrial septum (2D + color)", "Assess RV inflow (2D + color)", "Assess LVOT / Aortic valve (2D + color)", "Assess RV outflow (2D + color)", "Short axis: Bicaval view (SVC and IVC) (2D + color)", "Short axis sweep (right to left) with color on IVS"],
+                    functional: ["Abdominal Ao & IVC long axis (Color + PW Doppler)", "PW Doppler on hepatic veins", "Measure Descending aortic diastolic flow", "Measure Peak, mean, and end diastolic velocity of celiac trunk; Celiac VTI", "Measure ASD/PFO size, shunt direction, and gradient (PWD)", "Evaluate valvular gradients if relevant (CWD)", "Assess IVC diameter and respiratory variation"],
+                    pda: ["Abdominal Ao long axis (Color + PW Doppler) for diastolic flow reversal", "PW Doppler of the celiac trunk for diastolic flow", "Assess atrial septum: PFO/ASD size, shunt direction, and gradient (PWD)", "Evaluate Superior mesenteric artery (SMA) flow (color + PWD)"],
+                    pphn: ["Situs view & sweep (2D + color)", "Abdominal Ao & IVC long axis (Color + PW Doppler)", "Assess hepatic veins for flow pattern (PW)", "Assess atrial septum: PFO/ASD size, shunt direction, and gradient (PWD)", "Evaluate valvular gradients if relevant (CWD)", "Assess IVC diameter and respiratory variation"]
+                },
+                parasternal_long: {
+                    structural: ["PLAX 2D image", "Zoom on Aortic valve (2D)", "Zoom on Mitral valve (2D)", "Color sweep of IVS (anterior to posterior)", "RV inflow view (2D + color)", "RV outflow view (2D + color), Zoom PV"],
+                    functional: ["M-mode LV (at MV leaflet tips)", "M-mode through Aortic valve", "Measure Aortic valve annulus diameter (2D)", "Measure LV cavity and wall dimensions", "Calculate LV fractional shortening", "Calculate LA:Ao ratio, LVET, R-R interval", "Subjective evaluation of RV systolic performance", "Calculate RVSP from TR jet (CWD)", "Measure Pulmonary valve annulus diameter (2D)", "Calculate RV VTI for RVO (PWD)", "Measure Pulmonary artery acceleration time (PAAT), RVET"],
+                    pda: ["M-mode LV (at MV leaflet tips) for LVEDD", "M-mode through Aortic valve for LA:Ao ratio", "Calculate LV fractional shortening", "Assess for TR jet to estimate RVSP (CWD)", "Assess Pulmonary valve for regurgitation"],
+                    pphn: ["Subjective evaluation of IVS morphology (flattening/bulging)", "Subjective evaluation of RV systolic performance", "Calculate RVSP from TR jet (CWD)", "Measure PAAT, RVET", "Assess for pulmonary regurgitation; measure early diastolic pressure gradient"]
+                },
+                parasternal_short: {
+                    structural: ["SAX at Aortic valve level (define cusps, color)", "Image coronary artery origins (2D + low Nyquist color)", "SAX at LV level (mitral valve, papillary muscles, apex)", "Color sweep of IVS from base to apex"],
+                    functional: ["Assess tricuspid valve (2D + color + CW Doppler for RVSP)", "Assess pulmonary valve (color + PW/CW)", "Calculate MPA VTI for RVO", "Measure SVC diameter (M-mode or 2D)", "Calculate FS%, LV wall & cavity dimensions from M-mode"],
+                    pda: ["SAX at LV level (M-mode for FS% and dimensions)"],
+                    pphn: ["SAX at Aortic valve level (assess TR jet if superior trace)", "SAX at LV level: Subjective evaluation of IVS morphology (flattening/bulging)"]
+                },
+                apical: {
+                    structural: ["A4C 2D view", "A4C color sweep (anterior to posterior) for VSDs", "A4C LV: Zoom MV (2D)", "A4C RV: Zoom TV (2D)", "Apical two chamber view (2D + color)"],
+                    functional: ["LV inflow: Color, PWD/CWD for E/A wave, decel time, A-duration", "PW on pulmonary vein for S, D, A waves", "A5C: 2D of LVOT + color", "A5C: Doppler of LVOT for VTI (LVO calculation)", "Measure Isovolumic relaxation time (IVRT)", "RV inflow: M-mode of tricuspid annulus for TAPSE", "RV inflow: PW/CW of TV for E/A waves and RVSP", "Calculate biplane Simpson's EF (if indicated)"],
+                    pda: ["A4C LV inflow: PWD for E/A ratio, MV VTI", "Measure Isovolumic relaxation time (IVRT)", "A5C: Doppler of LVOT for LVO calculation"],
+                    pphn: ["A4C LV inflow: Transmitral flow (PWD) for E/A", "Measure TAPSE (M-mode through tricuspid annulus)", "A5C: Doppler of LVOT for LVO calculation", "Calculate RV MPI if indicated", "Calculate Biplane Simpson's EF"]
+                },
+                suprasternal: {
+                    structural: ["Short axis: Arch sidedness sweep (color)", "Short axis: Sweep for left SVC (color)", "Arch long axis (2D + color)"],
+                    functional: ["Short axis: PW on SVC and ductus arteriosus", "Measure PDA diameter (pulmonary & aortic end)", "Determine direction of ductal flow (color + PWD)", "Measure peak and mean velocity of transductal flow (PWD)", "Measure pre- and post-ductal aortic arch gradient (PWD/CWD)", "Calculate SVC VTI (PWD)"],
+                    pda: ["Measure PDA diameter (pulmonary & aortic end) (2D + Color)", "Determine direction & velocity of ductal flow (PWD/CWD)", "Measure pre- and post-ductal aortic arch gradient (to rule out obstruction)"],
+                    pphn: ["Determine PDA shunt direction and velocity", "Measure pre- and post-ductal aortic arch gradient", "Calculate SVC VTI (PWD)"]
+                },
+                high_parasternal: {
+                    structural: ["Define pulmonary artery branches (2D)", "Define four pulmonary veins (crab view) (2D + color)"],
+                    functional: ["Measure PA branch diameter (2D)", "Measure PA peak velocity and gradient (PWD)", "Measure Pulmonary venous peak velocity (PWD)"],
+                    pda: ["Assess LPA for diastolic flow", "Assess pulmonary veins (RUPV) for peak velocity"],
+                    pphn: ["Assess PA branches for velocity and gradient (PWD/CWD)", "Assess pulmonary venous flow"]
+                }
+            };
+
+            const acronyms = {
+                '2D': 'Two-Dimensional', 'A4C': 'Apical Four Chamber', 'A5C': 'Apical Five Chamber', 'Ao': 'Aorta / Aortic Root',
+                'ASD': 'Atrial Septal Defect', 'CWD': 'Continuous Wave Doppler', 'EF': 'Ejection Fraction', 'FS': 'Fractional Shortening',
+                'IVC': 'Inferior Vena Cava', 'IVS': 'Interventricular Septum', 'IVRT': 'Isovolumic Relaxation Time', 'LA': 'Left Atrium',
+                'LPA': 'Left Pulmonary Artery', 'LV': 'Left Ventricle', 'LVEDD': 'Left Ventricular End-Diastolic Diameter',
+                'LVET': 'Left Ventricular Ejection Time', 'LVO': 'Left Ventricular Output', 'LVOT': 'Left Ventricular Outflow Tract',
+                'MPA': 'Main Pulmonary Artery', 'MV': 'Mitral Valve', 'PA': 'Pulmonary Artery', 'PAAT': 'Pulmonary Artery Acceleration Time',
+                'PDA': 'Patent Ductus Arteriosus', 'PFO': 'Patent Foramen Ovale', 'PLAX': 'Parasternal Long Axis',
+                'PPHN': 'Persistent Pulmonary Hypertension of the Newborn', 'PV': 'Pulmonary Valve / Pulmonary Vein',
+                'PWD': 'Pulsed Wave Doppler', 'RA': 'Right Atrium', 'RV': 'Right Ventricle', 'RVET': 'Right Ventricular Ejection Time',
+                'RVO': 'Right Ventricular Output', 'RVSP': 'Right Ventricular Systolic Pressure', 'RUPV': 'Right Upper Pulmonary Vein',
+                'SAX': 'Parasternal Short Axis', 'SMA': 'Superior Mesenteric Artery', 'SVC': 'Superior Vena Cava',
+                'TAPSE': 'Tricuspid Annular Plane Systolic Excursion', 'TR': 'Tricuspid Regurgitation', 'TV': 'Tricuspid Valve',
+                'VSD': 'Ventricular Septal Defect', 'VTI': 'Velocity Time Integral'
+            };
+            
+            // --- UI Elements ---
+            const homeScreen = document.getElementById('home-screen');
+            const mainContent = document.getElementById('main-content');
+            const scanTypeButtons = document.querySelectorAll('.scan-type-btn');
+            const backToHomeBtn = document.getElementById('back-to-home');
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const viewContentArea = document.getElementById('view-content-area');
+            const scanTitle = document.getElementById('scan-title');
+            
+            let currentScanType = '';
+
+            // --- Functions ---
+            const generateChecklistHTML = (items, viewId, scanType) => {
+                if (!items || items.length === 0) {
+                    return '<p class="text-gray-500">No specific items for this view in the selected protocol.</p>';
+                }
+                return items.map((item, index) => `
+                    <li class="checklist-item bg-white p-4 rounded-lg shadow-sm">
+                        <input type="checkbox" id="${viewId}-${scanType}-${index}">
+                        <label for="${viewId}-${scanType}-${index}">${item}</label>
+                    </li>
+                `).join('');
+            };
+
+            const generateAcronymsHTML = (items) => {
+                if (!items || items.length === 0) return '';
+                const usedAcronyms = new Set();
+                const allItemsString = items.join(' ');
+
+                // Use a regex to find potential acronyms and split compound ones
+                const potentialAcronyms = allItemsString.match(/\b([A-Z:0-9]{2,})\b/g) || [];
+                
+                potentialAcronyms.forEach(acro => {
+                    if (acro.includes(':')) {
+                        acro.split(':').forEach(part => { if (acronyms[part]) usedAcronyms.add(part); });
+                    } else if (acronyms[acro]) {
+                        usedAcronyms.add(acro);
+                    }
+                });
+
+                if (usedAcronyms.size === 0) return '';
+
+                let acronymListHTML = '';
+                const sortedAcronyms = Array.from(usedAcronyms).sort();
+                
+                sortedAcronyms.forEach(acro => {
+                    acronymListHTML += `<li class="flex items-start"><strong class="font-semibold w-24 flex-shrink-0">${acro}:</strong> <span class="text-gray-600">${acronyms[acro]}</span></li>`;
+                });
+
+                return `
+                    <div class="mt-8 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                        <h4 class="text-lg font-semibold text-gray-700 mb-3">Acronym Key</h4>
+                        <ul class="space-y-2 text-sm columns-1 md:columns-2 lg:columns-3">
+                            ${acronymListHTML}
+                        </ul>
+                    </div>
+                `;
+            };
+            
+            const createViewSection = (viewId, title, checklistItems) => {
+                const section = document.createElement('div');
+                section.id = `view-${viewId}`;
+                section.className = 'view-section';
+                const acronymsBoxHTML = generateAcronymsHTML(checklistItems);
+
+                section.innerHTML = `
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
+                             <h3 class="text-3xl font-bold text-gray-800">${title}</h3>
+                            <div class="flex items-center space-x-3 self-end sm:self-center">
+                                <div class="relative h-16 w-16">
+                                    <svg class="h-full w-full -rotate-90" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="18" cy="18" r="15.9155" fill="transparent" stroke="#e5e7eb" stroke-width="3.5"></circle>
+                                        <circle cx="18" cy="18" r="15.9155" fill="transparent" stroke="#4f46e5" stroke-width="3.5" stroke-dasharray="0 100" class="progress-circle"></circle>
+                                    </svg>
+                                    <span class="progress-text absolute inset-0 flex items-center justify-center text-lg font-semibold text-indigo-600">0%</span>
+                                </div>
+                                <span class="progress-count text-gray-600 font-medium text-lg">0 / ${checklistItems.length}</span>
+                            </div>
+                        </div>
+                        <ul class="space-y-3 checklist-container">
+                            ${generateChecklistHTML(checklistItems, viewId, currentScanType)}
+                        </ul>
+                        ${acronymsBoxHTML}
+                    </div>`;
+                
+                // Add event listeners for progress tracking
+                const checkboxes = section.querySelectorAll('input[type="checkbox"]');
+                const progressCircle = section.querySelector('.progress-circle');
+                const progressText = section.querySelector('.progress-text');
+                const progressCount = section.querySelector('.progress-count');
+                const totalItems = checkboxes.length;
+
+                const updateProgress = () => {
+                    const checkedItems = section.querySelectorAll('input[type="checkbox"]:checked').length;
+                    const percentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
+                    
+                    const circumference = 2 * Math.PI * 15.9155;
+                    const offset = circumference - (percentage / 100) * circumference;
+                    progressCircle.style.strokeDasharray = `${circumference}`;
+                    progressCircle.style.strokeDashoffset = offset;
+                    
+                    progressText.textContent = `${percentage}%`;
+                    progressCount.textContent = `${checkedItems} / ${totalItems}`;
+                };
+                
+                checkboxes.forEach(cb => cb.addEventListener('change', updateProgress));
+                updateProgress(); // Initial call
+                return section;
+            };
+
+            const populateViews = (scanType) => {
+                viewContentArea.innerHTML = '';
+                currentScanType = scanType;
+                
+                const getItems = (viewKey, type) => {
+                    const base = scanData[viewKey];
+                    let items = [];
+                    if (type === 'comprehensive' || type === 'functional') {
+                        // Per manual, "functional" is the comprehensive "Standard Neonatal Functional Protocol"
+                        items = [...new Set([...(base.structural || []), ...(base.functional || [])])];
+                    } else {
+                        items = base[type] || [];
+                    }
+                    return items;
+                };
+
+                const views = [
+                    { id: 'subcostal', title: 'Subcostal View' },
+                    { id: 'parasternal-long', title: 'Parasternal Long-Axis' },
+                    { id: 'parasternal-short', title: 'Parasternal Short-Axis' },
+                    { id: 'apical', title: 'Apical View' },
+                    { id: 'suprasternal', title: 'Suprasternal View' },
+                    { id: 'high-parasternal', title: 'High Parasternal View' }
+                ];
+
+                views.forEach(view => {
+                    const items = getItems(view.id.replace('-', '_'), scanType);
+                    const section = createViewSection(view.id, view.title, items);
+                    viewContentArea.appendChild(section);
+                });
+            };
+
+            const showView = (viewId) => {
+                document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+                document.getElementById(`view-${viewId}`).classList.add('active');
+
+                sidebarLinks.forEach(link => {
+                    link.classList.toggle('active', link.dataset.view === viewId);
+                });
+            };
+            
+            // --- Event Listeners ---
+            scanTypeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const scanType = button.dataset.scanType;
+                    scanTitle.textContent = `${scanType.charAt(0).toUpperCase() + scanType.slice(1)} Scan`;
+                    
+                    homeScreen.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    
+                    populateViews(scanType);
+                    showView('subcostal'); // Show first view by default
+                });
+            });
+
+            backToHomeBtn.addEventListener('click', () => {
+                mainContent.style.display = 'none';
+                homeScreen.style.display = 'flex';
+            });
+            
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showView(link.dataset.view);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+
