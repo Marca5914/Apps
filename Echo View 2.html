@@ -1,19 +1,23 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neonatal Echo Quick Reference Guide</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="path/to/compiled-and-minified-tailwind.css" rel="stylesheet">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
             overscroll-behavior: none;
         }
-        .main-content {
-            display: none;
-        }
+        
+        /* Using CSS classes for toggling visibility is slightly cleaner and often better 
+           than inline style manipulation. Changed '.main-content' to '.hidden' utility.
+        */
         .view-section {
             display: none;
         }
@@ -24,6 +28,7 @@
             background-color: #4f46e5;
             color: white;
         }
+        /* Custom checklist styles (retained as they are performant) */
         .checklist-item input:checked + label {
             text-decoration: line-through;
             color: #6b7280;
@@ -55,7 +60,7 @@
         .checklist-item input {
             display: none;
         }
-        /* Mobile sidebar styles */
+        /* Mobile sidebar styles (retained, excellent use of transitions) */
         #sidebar {
             transition: transform 0.3s ease-in-out;
         }
@@ -79,7 +84,6 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
 
-    <!-- Home Screen -->
     <div id="home-screen" class="min-h-screen flex flex-col items-center justify-center p-4">
         <div class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold text-gray-900">Neonatal Echo Guide</h1>
@@ -107,20 +111,17 @@
                 <p class="text-gray-500 mt-2">Full structural and functional protocol.</p>
             </button>
         </div>
-         <p class="text-xs text-gray-400 mt-8">Based on the Rotunda Neonatal Cardiac Research NPE Teaching Manual (2019).</p>
+           <p class="text-xs text-gray-400 mt-8">Based on the Rotunda Neonatal Cardiac Research NPE Teaching Manual (2019).</p>
     </div>
 
-    <!-- Main Content Area -->
-    <div id="main-content" class="main-content">
+    <div id="main-content" class="hidden">
         <div class="relative min-h-screen md:flex">
-             <!-- Overlay for mobile -->
-            <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
-            
-            <!-- Sidebar -->
+             <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+           
             <aside id="sidebar" class="w-64 bg-gray-800 text-white flex-shrink-0 flex flex-col">
                 <div class="p-4 border-b border-gray-700 flex justify-between items-center">
                     <h2 id="scan-title" class="text-xl font-bold">Scan Protocol</h2>
-                     <button id="close-sidebar-btn" class="md:hidden p-1">
+                    <button id="close-sidebar-btn" class="md:hidden p-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -139,21 +140,18 @@
                 </div>
             </aside>
 
-            <!-- Content -->
             <main class="flex-1 flex flex-col">
-                 <!-- Mobile Header -->
-                <header class="md:hidden bg-white shadow-md p-4 flex items-center">
+                 <header class="md:hidden bg-white shadow-md p-4 flex items-center">
                     <button id="open-sidebar-btn" class="p-1 mr-4 text-gray-600">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                           </svg>
                     </button>
                     <h3 id="mobile-view-title" class="text-xl font-bold text-gray-800">Subcostal View</h3>
                 </header>
-                <div class="p-4 sm:p-6 flex-grow overflow-y-auto">
+                <div id="view-parent-container" class="p-4 sm:p-6 flex-grow overflow-y-auto">
                     <div id="view-content-area">
-                        <!-- Dynamic Content Goes Here -->
-                    </div>
+                        </div>
                 </div>
             </main>
         </div>
@@ -162,39 +160,39 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- DATABASE of Checklist Items ---
+            // --- DATABASE of Checklist Items (OPTIMIZATION 2: Standardized keys to hyphens) ---
             const scanData = {
-                subcostal: {
+                'subcostal': {
                     structural: ["Situs view & sweep in transverse plane (2D + color)", "Long-axis sweep (posterior to anterior) with color for connections", "Assess atrial septum (2D + color)", "Assess RV inflow (2D + color)", "Assess LVOT / Aortic valve (2D + color)", "Assess RV outflow (2D + color)", "Short axis: Bicaval view (SVC and IVC) (2D + color)", "Short axis sweep (right to left) with color on IVS"],
                     functional: ["Abdominal Ao & IVC long axis (Color + PW Doppler)", "PW Doppler on hepatic veins", "Measure Descending aortic diastolic flow", "Measure Peak, mean, and end diastolic velocity of celiac trunk; Celiac VTI", "Measure ASD/PFO size, shunt direction, and gradient (PWD)", "Evaluate valvular gradients if relevant (CWD)", "Assess IVC diameter and respiratory variation"],
                     pda: ["Abdominal Ao long axis (Color + PW Doppler) for diastolic flow reversal", "PW Doppler of the celiac trunk for diastolic flow", "Assess atrial septum: PFO/ASD size, shunt direction, and gradient (PWD)", "Evaluate Superior mesenteric artery (SMA) flow (color + PWD)"],
                     pphn: ["Situs view & sweep (2D + color)", "Abdominal Ao & IVC long axis (Color + PW Doppler)", "Assess hepatic veins for flow pattern (PW)", "Assess atrial septum: PFO/ASD size, shunt direction, and gradient (PWD)", "Evaluate valvular gradients if relevant (CWD)", "Assess IVC diameter and respiratory variation"]
                 },
-                parasternal_long: {
+                'parasternal-long': { // Changed from parasternal_long
                     structural: ["PLAX 2D image", "Zoom on Aortic valve (2D)", "Zoom on Mitral valve (2D)", "Color sweep of IVS (anterior to posterior)", "RV inflow view (2D + color)", "RV outflow view (2D + color), Zoom PV"],
                     functional: ["M-mode LV (at MV leaflet tips)", "M-mode through Aortic valve", "Measure Aortic valve annulus diameter (2D)", "Measure LV cavity and wall dimensions", "Calculate LV fractional shortening", "Calculate LA:Ao ratio, LVET, R-R interval", "Subjective evaluation of RV systolic performance", "Calculate RVSP from TR jet (CWD)", "Measure Pulmonary valve annulus diameter (2D)", "Calculate RV VTI for RVO (PWD)", "Measure Pulmonary artery acceleration time (PAAT), RVET"],
                     pda: ["M-mode LV (at MV leaflet tips) for LVEDD", "M-mode through Aortic valve for LA:Ao ratio", "Calculate LV fractional shortening", "Assess for TR jet to estimate RVSP (CWD)", "Assess Pulmonary valve for regurgitation"],
                     pphn: ["Subjective evaluation of IVS morphology (flattening/bulging)", "Subjective evaluation of RV systolic performance", "Calculate RVSP from TR jet (CWD)", "Measure PAAT, RVET", "Assess for pulmonary regurgitation; measure early diastolic pressure gradient"]
                 },
-                parasternal_short: {
+                'parasternal-short': { // Changed from parasternal_short
                     structural: ["SAX at Aortic valve level (define cusps, color)", "Image coronary artery origins (2D + low Nyquist color)", "SAX at LV level (mitral valve, papillary muscles, apex)", "Color sweep of IVS from base to apex"],
                     functional: ["Assess tricuspid valve (2D + color + CW Doppler for RVSP)", "Assess pulmonary valve (color + PW/CW)", "Calculate MPA VTI for RVO", "Measure SVC diameter (M-mode or 2D)", "Calculate FS%, LV wall & cavity dimensions from M-mode"],
                     pda: ["SAX at LV level (M-mode for FS% and dimensions)"],
                     pphn: ["SAX at Aortic valve level (assess TR jet if superior trace)", "SAX at LV level: Subjective evaluation of IVS morphology (flattening/bulging)"]
                 },
-                apical: {
+                'apical': {
                     structural: ["A4C 2D view", "A4C color sweep (anterior to posterior) for VSDs", "A4C LV: Zoom MV (2D)", "A4C RV: Zoom TV (2D)", "Apical two chamber view (2D + color)"],
                     functional: ["LV inflow: Color, PWD/CWD for E/A wave, decel time, A-duration", "PW on pulmonary vein for S, D, A waves", "A5C: 2D of LVOT + color", "A5C: Doppler of LVOT for VTI (LVO calculation)", "Measure Isovolumic relaxation time (IVRT)", "RV inflow: M-mode of tricuspid annulus for TAPSE", "RV inflow: PW/CW of TV for E/A waves and RVSP", "Calculate biplane Simpson's EF (if indicated)"],
                     pda: ["A4C LV inflow: PWD for E/A ratio, MV VTI", "Measure Isovolumic relaxation time (IVRT)", "A5C: Doppler of LVOT for LVO calculation"],
                     pphn: ["A4C LV inflow: Transmitral flow (PWD) for E/A", "Measure TAPSE (M-mode through tricuspid annulus)", "A5C: Doppler of LVOT for LVO calculation", "Calculate RV MPI if indicated", "Calculate Biplane Simpson's EF"]
                 },
-                suprasternal: {
+                'suprasternal': {
                     structural: ["Short axis: Arch sidedness sweep (color)", "Short axis: Sweep for left SVC (color)", "Arch long axis (2D + color)"],
                     functional: ["Short axis: PW on SVC and ductus arteriosus", "Measure PDA diameter (pulmonary & aortic end)", "Determine direction of ductal flow (color + PWD)", "Measure peak and mean velocity of transductal flow (PWD)", "Measure pre- and post-ductal aortic arch gradient (PWD/CWD)", "Calculate SVC VTI (PWD)"],
                     pda: ["Measure PDA diameter (pulmonary & aortic end) (2D + Color)", "Determine direction & velocity of ductal flow (PWD/CWD)", "Measure pre- and post-ductal aortic arch gradient (to rule out obstruction)"],
                     pphn: ["Determine PDA shunt direction and velocity", "Measure pre- and post-ductal aortic arch gradient", "Calculate SVC VTI (PWD)"]
                 },
-                high_parasternal: {
+                'high-parasternal': { // Changed from high_parasternal
                     structural: ["Define pulmonary artery branches (2D)", "Define four pulmonary veins (crab view) (2D + color)"],
                     functional: ["Measure PA branch diameter (2D)", "Measure PA peak velocity and gradient (PWD)", "Measure Pulmonary venous peak velocity (PWD)"],
                     pda: ["Assess LPA for diastolic flow", "Assess pulmonary veins (RUPV) for peak velocity"],
@@ -217,6 +215,7 @@
             const overlay = document.getElementById('overlay');
             const sidebarLinks = document.querySelectorAll('.sidebar-link');
             const viewContentArea = document.getElementById('view-content-area');
+            const viewParentContainer = document.getElementById('view-parent-container'); // For Event Delegation
             const scanTitle = document.getElementById('scan-title');
             const mobileViewTitle = document.getElementById('mobile-view-title');
             
@@ -240,6 +239,7 @@
                 if (!items || items.length === 0) {
                     return '<p class="text-gray-500">No specific items for this view in the selected protocol.</p>';
                 }
+                // Note: The index in the ID is only for unique HTML generation, state is not saved.
                 return items.map((item, index) => `
                     <li class="checklist-item bg-white p-4 rounded-lg shadow-sm">
                         <input type="checkbox" id="${viewId}-${scanType}-${index}">
@@ -252,12 +252,12 @@
                 if (!items || items.length === 0) return '';
                 const usedAcronyms = new Set();
                 const allItemsString = items.join(' ');
-                const potentialAcronyms = allItemsString.match(/\b([A-Z:0-9]{2,})\b/g) || [];
                 
-                potentialAcronyms.forEach(acro => {
-                    if (acro.includes(':')) {
-                        acro.split(':').forEach(part => { if (acronyms[part]) usedAcronyms.add(part); });
-                    } else if (acronyms[acro]) {
+                // Simple iteration is more reliable than complex regex for acronyms in medical text.
+                Object.keys(acronyms).forEach(acro => {
+                    // Create a regex to find the acronym as a whole word (using word boundaries \b)
+                    const regex = new RegExp(`\\b${acro}\\b`, 'g');
+                    if (regex.test(allItemsString)) {
                         usedAcronyms.add(acro);
                     }
                 });
@@ -274,76 +274,98 @@
                 return `<div class="mt-8 p-4 bg-gray-50 border border-gray-200 rounded-lg"><h4 class="text-lg font-semibold text-gray-700 mb-3">Acronym Key</h4><ul class="space-y-2 text-sm columns-1 md:columns-2 lg:columns-3">${acronymListHTML}</ul></div>`;
             };
             
-            const createViewSection = (viewId, title, checklistItems) => {
-                const section = document.createElement('div');
-                section.id = `view-${viewId}`;
-                section.className = 'view-section';
-                const acronymsBoxHTML = generateAcronymsHTML(checklistItems);
-
-                section.innerHTML = `
-                    <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
-                             <h3 class="text-3xl font-bold text-gray-800 hidden md:block">${title}</h3>
-                            <div class="flex items-center space-x-3 self-end sm:self-center">
-                                <div class="relative h-16 w-16">
-                                    <svg class="h-full w-full -rotate-90" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9155" fill="transparent" stroke="#e5e7eb" stroke-width="3.5"></circle><circle cx="18" cy="18" r="15.9155" fill="transparent" stroke="#4f46e5" stroke-width="3.5" stroke-dasharray="0 100" class="progress-circle"></circle></svg>
-                                    <span class="progress-text absolute inset-0 flex items-center justify-center text-lg font-semibold text-indigo-600">0%</span>
-                                </div>
-                                <span class="progress-count text-gray-600 font-medium text-lg">0 / ${checklistItems.length}</span>
-                            </div>
-                        </div>
-                        <ul class="space-y-3 checklist-container">${generateChecklistHTML(checklistItems, viewId, currentScanType)}</ul>
-                        ${acronymsBoxHTML}
-                    </div>`;
-                
+            // This function is kept separate to allow for easy recalculation of progress
+            const updateProgress = (section) => {
                 const checkboxes = section.querySelectorAll('input[type="checkbox"]');
                 const progressCircle = section.querySelector('.progress-circle');
                 const progressText = section.querySelector('.progress-text');
                 const progressCount = section.querySelector('.progress-count');
                 const totalItems = checkboxes.length;
 
-                const updateProgress = () => {
-                    const checkedItems = section.querySelectorAll('input[type="checkbox"]:checked').length;
-                    const percentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
-                    const circumference = 2 * Math.PI * 15.9155;
-                    const offset = circumference - (percentage / 100) * circumference;
-                    progressCircle.style.strokeDasharray = `${circumference}`;
-                    progressCircle.style.strokeDashoffset = offset;
-                    progressText.textContent = `${percentage}%`;
-                    progressCount.textContent = `${checkedItems} / ${totalItems}`;
-                };
+                if (totalItems === 0) return;
+
+                const checkedItems = section.querySelectorAll('input[type="checkbox"]:checked').length;
+                const percentage = Math.round((checkedItems / totalItems) * 100);
+                const circumference = 2 * Math.PI * 15.9155; // Radius of 15.9155
+                const offset = circumference - (percentage / 100) * circumference;
                 
-                checkboxes.forEach(cb => cb.addEventListener('change', updateProgress));
-                updateProgress();
+                progressCircle.style.strokeDasharray = `${circumference}`;
+                progressCircle.style.strokeDashoffset = offset;
+                progressText.textContent = `${percentage}%`;
+                progressCount.textContent = `${checkedItems} / ${totalItems}`;
+            };
+
+
+            const createViewSection = (viewId, title, checklistItems) => {
+                const section = document.createElement('div');
+                section.id = `view-${viewId}`;
+                section.className = 'view-section';
+                const acronymsBoxHTML = generateAcronymsHTML(checklistItems);
+                
+                // Initial progress count for the span
+                const totalItems = checklistItems.length;
+
+                section.innerHTML = `
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
+                            <h3 class="text-3xl font-bold text-gray-800 hidden md:block">${title}</h3>
+                            <div class="flex items-center space-x-3 self-end sm:self-center">
+                                <div class="relative h-16 w-16">
+                                    <svg class="h-full w-full -rotate-90" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.9155" fill="transparent" stroke="#e5e7eb" stroke-width="3.5"></circle><circle cx="18" cy="18" r="15.9155" fill="transparent" stroke="#4f46e5" stroke-width="3.5" stroke-dasharray="0 100" class="progress-circle"></circle></svg>
+                                    <span class="progress-text absolute inset-0 flex items-center justify-center text-lg font-semibold text-indigo-600">0%</span>
+                                </div>
+                                <span class="progress-count text-gray-600 font-medium text-lg">0 / ${totalItems}</span>
+                            </div>
+                        </div>
+                        <ul class="space-y-3 checklist-container">${generateChecklistHTML(checklistItems, viewId, currentScanType)}</ul>
+                        ${acronymsBoxHTML}
+                    </div>`;
+                
+                // Initialize progress to 0/Total
+                updateProgress(section);
                 return section;
             };
 
             const populateViews = (scanType) => {
+                // OPTIMIZATION 3: Use DocumentFragment for batch DOM operations
+                const fragment = document.createDocumentFragment();
                 viewContentArea.innerHTML = '';
                 currentScanType = scanType;
                 
-                const getItems = (viewKey, type) => {
-                    const base = scanData[viewKey];
+                const getItems = (viewId, type) => {
+                    const base = scanData[viewId]; // Accessing using the standardized hyphen key
                     let items = [];
-                    if (type === 'comprehensive' || type === 'functional') {
+                    if (type === 'comprehensive') {
+                        // Comprehensive = Structural + Functional
                         items = [...new Set([...(base.structural || []), ...(base.functional || [])])];
+                    } else if (type === 'functional') {
+                        // Functional only
+                        items = [...new Set([...(base.functional || [])])];
+                    } else if (type === 'structural') {
+                        // Structural only
+                        items = [...new Set([...(base.structural || [])])];
                     } else {
+                        // PPHN or PDA
                         items = base[type] || [];
                     }
                     return items;
                 };
 
                 views.forEach(view => {
-                    const items = getItems(view.id.replace('-', '_'), scanType);
+                    const items = getItems(view.id, scanType);
                     const section = createViewSection(view.id, view.title, items);
-                    viewContentArea.appendChild(section);
+                    fragment.appendChild(section);
                 });
+                
+                viewContentArea.appendChild(fragment); // Single DOM insertion
             };
 
             const showView = (viewId) => {
                 document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
                 const activeSection = document.getElementById(`view-${viewId}`);
-                activeSection.classList.add('active');
+                if (activeSection) {
+                    activeSection.classList.add('active');
+                }
 
                 sidebarLinks.forEach(link => {
                     link.classList.toggle('active', link.dataset.view === viewId);
@@ -359,20 +381,47 @@
             };
             
             // --- Event Listeners ---
+            
+            // OPTIMIZATION 5: Event Delegation for Checkboxes
+            viewParentContainer.addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox') {
+                    // The closest '.view-section' is the container for the progress update
+                    const section = e.target.closest('.view-section');
+                    if (section) {
+                        updateProgress(section);
+                    }
+                }
+            });
+
             scanTypeButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     const scanType = button.dataset.scanType;
-                    scanTitle.textContent = `${scanType.charAt(0).toUpperCase() + scanType.slice(1)} Scan`;
-                    homeScreen.style.display = 'none';
-                    mainContent.style.display = 'block';
+                    const titleMap = {
+                        'structural': 'Structural Scan',
+                        'functional': 'Functional Scan',
+                        'pphn': 'PPHN Assessment',
+                        'pda': 'PDA Assessment',
+                        'comprehensive': 'Comprehensive Scan'
+                    };
+                    scanTitle.textContent = titleMap[scanType] || `${scanType.charAt(0).toUpperCase() + scanType.slice(1)} Scan`;
+                    
+                    // Use class toggling for visibility (cleaner)
+                    homeScreen.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                    
+                    // Ensure 'flex' class is applied for main-content only when visible, if needed
+                    mainContent.classList.add('flex'); 
+
                     populateViews(scanType);
                     showView('subcostal');
                 });
             });
 
             backToHomeBtn.addEventListener('click', () => {
-                mainContent.style.display = 'none';
-                homeScreen.style.display = 'flex';
+                mainContent.classList.add('hidden');
+                mainContent.classList.remove('flex'); // Remove flex when hidden
+                homeScreen.classList.remove('hidden');
+                homeScreen.classList.add('flex'); // Add flex when visible
             });
             
             sidebarLinks.forEach(link => {
@@ -385,9 +434,12 @@
             openSidebarBtn.addEventListener('click', toggleSidebar);
             closeSidebarBtn.addEventListener('click', toggleSidebar);
             overlay.addEventListener('click', toggleSidebar);
+            
+            // Initial state: hide main content and show home screen
+            mainContent.classList.add('hidden');
+            homeScreen.classList.add('flex');
+            
         });
     </script>
 </body>
 </html>
-
-
